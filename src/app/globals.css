@@ -134,7 +134,7 @@ nav#nav.scrolled {
   border-radius: 100px;
   transition: background 0.2s, color 0.2s;
 }
-.lang-btn.active { background: var(--primary); color: #fff; }
+.lang-btn.active { background: var(--primary); color: var(--ink); }
 
 .nav-cta {
   font-size: 0.8125rem;
@@ -146,7 +146,7 @@ nav#nav.scrolled {
   transition: background 0.2s, border-color 0.2s, color 0.2s;
   display: inline-block;
 }
-.nav-cta:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+.nav-cta:hover { background: var(--primary); border-color: var(--primary); color: var(--ink); }
 
 /* ── HERO ── */
 #hero {
@@ -232,7 +232,7 @@ nav#nav.scrolled {
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
 }
 
-.btn-fill { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-fill { background: var(--primary); color: var(--ink); border-color: var(--primary); }
 .btn-fill:hover { background: var(--primary-dim); border-color: var(--primary-dim); transform: translateY(-1px); }
 
 .btn-outline { background: transparent; color: var(--ink); border-color: var(--border); }

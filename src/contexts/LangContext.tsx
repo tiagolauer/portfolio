@@ -31,4 +31,8 @@ export function LangProvider({
   );
 }
 
-export const useLang = () => useContext(LangContext);
+export function useLang() {
+  const ctx = useContext(LangContext);
+  if (!ctx.lang) throw new Error('useLang must be used within LangProvider');
+  return ctx;
+}
