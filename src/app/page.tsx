@@ -261,6 +261,7 @@ function Experience() {
 /* ── Project card with hover lift ── */
 interface ProjCardProps {
   href?: string;
+  featured?: boolean;
   label: string;
   name: string;
   desc: string;
@@ -270,9 +271,10 @@ interface ProjCardProps {
   children?: React.ReactNode;
 }
 
-function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0, children }: ProjCardProps) {
+function ProjCard({ href, featured, label, name, desc, lang: techLang, linkText, delay = 0, children }: ProjCardProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: '-40px 0px' });
+  const cls = `proj-card${featured ? ' span-2' : ''}`;
 
   const inner = (
     <>
@@ -296,11 +298,11 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="proj-card"
+        className={cls}
         initial={{ opacity: 0, y: 18 }}
         animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
         transition={{ duration: 0.65, delay: delay / 1000, ease: EASE }}
-        whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+        whileHover={featured ? undefined : { y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
       >
         {inner}
       </motion.a>
@@ -310,7 +312,7 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
   return (
     <motion.div
       ref={ref as React.RefObject<HTMLDivElement>}
-      className="proj-card span-2"
+      className={cls}
       initial={{ opacity: 0, y: 18 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
       transition={{ duration: 0.65, delay: delay / 1000, ease: EASE }}
@@ -331,25 +333,25 @@ function Projects() {
         </Reveal>
         <div className="proj-grid">
           <ProjCard
+            href="https://github.com/tiagolauer/sql-template-typed"
             label={t('p_feat')}
-            name={t('p_h2k_name')}
-            desc={t('p_h2k_desc')}
-            lang="React Native · TypeScript · Expo"
-            linkText={t('p_prod')}
+            name="sql-template-typed"
+            desc={t('p_sql_desc')}
+            lang="TypeScript · npm"
+            linkText={t('p_github')}
+            featured
           >
             <div className="code-block" aria-hidden="true">
-              <div className="cb-line"><span className="cb-n">1</span><span className="cm">{'// 8 200 ms → 340 ms · 96% alloc reduction'}</span></div>
+              <div className="cb-line"><span className="cb-n">1</span><span className="cm">{'// Write SQL. Get types. Zero overhead.'}</span></div>
               <div className="cb-line"><span className="cb-n">2</span><span /></div>
-              <div className="cb-line"><span className="cb-n">3</span><span><span className="kw">static</span>{' '}<span className="kw">async</span>{' ValueTask '}<span className="fn">BulkSync</span>{'('}</span></div>
-              <div className="cb-line"><span className="cb-n">4</span><span>{'  ReadOnlyMemory'}<span className="str">{'<Op>'}</span>{' batch,'}</span></div>
-              <div className="cb-line"><span className="cb-n">5</span><span>{'  CancellationToken ct = '}<span className="kw">default</span>{')'}</span></div>
-              <div className="cb-line"><span className="cb-n">6</span><span>{'{'}</span></div>
-              <div className="cb-line"><span className="cb-n">7</span><span>{'  '}<span className="kw">var</span>{' pool = ArrayPool'}<span className="str">{'<byte>'}</span>{'.Shared;'}</span></div>
-              <div className="cb-line"><span className="cb-n">8</span><span>{'  '}<span className="kw">var</span>{' buf  = pool.'}<span className="fn">Rent</span>{'(batch.Length * 256);'}</span></div>
-              <div className="cb-line"><span className="cb-n">9</span><span>{'  '}<span className="fn">SerializeAll</span>{'(batch.Span, buf.'}<span className="fn">AsSpan</span>{'()); '}<span className="cm">{'// zero-copy'}</span></span></div>
-              <div className="cb-line"><span className="cb-n">10</span><span>{'  '}<span className="kw">await</span>{' _repo.'}<span className="fn">UpsertAsync</span>{'(buf, ct);    '}<span className="cm">{'// 1 round-trip'}</span></span></div>
-              <div className="cb-line"><span className="cb-n">11</span><span>{'  pool.'}<span className="fn">Return</span>{'(buf, clearArray: '}<span className="kw">true</span>{');'}</span></div>
-              <div className="cb-line"><span className="cb-n">12</span><span>{'}'}</span></div>
+              <div className="cb-line"><span className="cb-n">3</span><span><span className="kw">const</span>{' result = '}<span className="kw">await</span>{' db.'}<span className="fn">query</span>{'('}</span></div>
+              <div className="cb-line"><span className="cb-n">4</span><span>{'  '}<span className="str">{"'select id, name, email from users'"}</span></span></div>
+              <div className="cb-line"><span className="cb-n">5</span><span>{');'}</span></div>
+              <div className="cb-line"><span className="cb-n">6</span><span /></div>
+              <div className="cb-line"><span className="cb-n">7</span><span><span className="kw">if</span>{' (result.status === ResultStatus.'}<span className="fn">Ok</span>{')'}</span></div>
+              <div className="cb-line"><span className="cb-n">8</span><span>{'  result.value'}</span></div>
+              <div className="cb-line"><span className="cb-n">9</span><span>{'  '}<span className="cm">{'// ^? { id: number; name: string; email: string }[]'}</span></span></div>
+              <div className="cb-line"><span className="cb-n">10</span><span /></div>
             </div>
           </ProjCard>
 
