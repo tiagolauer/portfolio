@@ -131,6 +131,7 @@ function About() {
               height={72}
               className="about-avatar"
               unoptimized
+              loading="lazy"
             />
             <p className="about-body">{t('about_body')}</p>
           </Reveal>
