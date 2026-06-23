@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useLang } from '@/contexts/LangContext';
 
 export function Nav() {
-  const { lang, setLang, t } = useLang();
+  const { lang, t } = useLang();
+  const router = useRouter();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -12,6 +15,12 @@ export function Nav() {
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
+
+  function switchLang(next: 'en' | 'pt') {
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    const newPath = pathname.replace(/^\/(en|pt)/, `/${next}`);
+    router.push(`${newPath}${hash}`);
+  }
 
   return (
     <nav id="nav" className={scrolled ? 'scrolled' : ''}>
@@ -30,11 +39,15 @@ export function Nav() {
             <div className="lang-toggle" role="group" aria-label="Language">
               <button
                 className={`lang-btn${lang === 'en' ? ' active' : ''}`}
-                onClick={() => setLang('en')}
+                onClick={() => switchLang('en')}
+                aria-label="Switch to English"
+                aria-pressed={lang === 'en'}
               >EN</button>
               <button
                 className={`lang-btn${lang === 'pt' ? ' active' : ''}`}
-                onClick={() => setLang('pt')}
+                onClick={() => switchLang('pt')}
+                aria-label="Mudar para Português"
+                aria-pressed={lang === 'pt'}
               >PT</button>
             </div>
             <a href="#contact" className="nav-cta">{t('n_contact')}</a>
