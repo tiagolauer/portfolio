@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Unbounded, Figtree } from 'next/font/google';
+import { MotionConfig } from 'framer-motion';
 import './globals.css';
 import { LangProvider } from '@/contexts/LangContext';
 import { Nav } from '@/components/Nav';
@@ -34,11 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={`${unbounded.variable} ${figtree.variable}`}>
       <body>
-        <LangProvider>
-          <ScrollProgress />
-          <Nav />
-          {children}
-        </LangProvider>
+        <MotionConfig reducedMotion="user">
+          <LangProvider>
+            <ScrollProgress />
+            <Nav />
+            {children}
+          </LangProvider>
+        </MotionConfig>
       </body>
     </html>
   );
