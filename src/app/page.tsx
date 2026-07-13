@@ -83,8 +83,21 @@ function Hero() {
           </div>
           <div className="hero-actions">
             <a href="#projects" className="btn btn-fill">{t('h_cta1')}</a>
-            <a href="#contact"  className="btn btn-outline">{t('h_cta2')}</a>
+            <a href="#contact"  className="hero-cta-secondary">{t('h_cta2')}</a>
           </div>
+        </motion.div>
+
+        <motion.div
+          className="hero-proof"
+          custom={0.85}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+        >
+          <AnimatedStat variant="inline" rawVal={10} suffix="K+" label={t('st_hero_usr')} />
+          <AnimatedStat variant="inline" rawVal={62} suffix="%"  label={t('st_hero_bundle')} />
+          <AnimatedStat variant="inline" rawVal={10} suffix="×"  label={t('st_hero_perf')} />
+          <AnimatedStat variant="inline" rawVal={40} suffix="%"  label={t('st_hero_dev')} />
         </motion.div>
       </div>
     </section>
@@ -98,11 +111,24 @@ interface StatProps {
   label: string;
   divideBy?: number;
   decimals?: number;
+  variant?: 'card' | 'inline';
 }
 
-function AnimatedStat({ rawVal, suffix, label, divideBy = 1, decimals = 0 }: StatProps) {
+function AnimatedStat({ rawVal, suffix, label, divideBy = 1, decimals = 0, variant = 'card' }: StatProps) {
   const { count, ref } = useCountUp(rawVal, 1400);
   const display = decimals > 0 ? (count / divideBy).toFixed(decimals) : count / divideBy;
+
+  if (variant === 'inline') {
+    return (
+      <div className="hero-proof-item">
+        <span className="hero-proof-val" ref={ref as React.Ref<HTMLSpanElement>}>
+          {display}{suffix}
+        </span>
+        <span className="hero-proof-lbl">{label}</span>
+      </div>
+    );
+  }
+
   return (
     <div className="stat">
       <div className="stat-val" ref={ref as React.Ref<HTMLDivElement>}>
@@ -443,7 +469,7 @@ export default function Page() {
         <div className="wrap">
           <div className="footer-inner">
             <span className="footer-text">{t('ft_copy')}</span>
-            <span className="footer-text">Balneário Camboriú, Brazil</span>
+            <span className="footer-text">Brusque, Brazil</span>
           </div>
         </div>
       </footer>

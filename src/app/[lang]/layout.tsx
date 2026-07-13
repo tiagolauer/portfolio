@@ -87,7 +87,7 @@ const jsonLd = {
   },
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Balneário Camboriú',
+    addressLocality: 'Brusque',
     addressCountry: 'BR',
   },
   email: 'tiagoestrelalauer@gmail.com',
