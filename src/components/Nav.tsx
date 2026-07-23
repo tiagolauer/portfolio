@@ -23,7 +23,7 @@ export function Nav() {
             <li><a href="#about">{t('n_about')}</a></li>
             <li><a href="#skills">{t('n_skills')}</a></li>
             <li><a href="#experience">{t('n_exp')}</a></li>
-            <li><a href="#projects">{t('n_proj')}</a></li>
+            <li><a href="#open-source">{t('n_os')}</a></li>
           </ul>
 
           <div className="nav-right">

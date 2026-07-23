@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Reveal } from '@/components/Reveal';
 import { useLang } from '@/contexts/LangContext';
 import { useCountUp } from '@/hooks/useCountUp';
+import type { T } from '@/i18n/strings';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const CONTACT_EMAIL = 'tiagoestrelalauer@gmail.com';
@@ -82,7 +83,7 @@ function Hero() {
             <p className="hero-location">{t('h_loc')}</p>
           </div>
           <div className="hero-actions">
-            <a href="#projects" className="btn btn-fill">{t('h_cta1')}</a>
+            <a href="#open-source" className="btn btn-fill">{t('h_cta1')}</a>
             <a href="#contact"  className="hero-cta-secondary">{t('h_cta2')}</a>
           </div>
         </motion.div>
@@ -286,119 +287,116 @@ function Experience() {
 
 /* ── Project card with hover lift ── */
 interface ProjCardProps {
-  href?: string;
+  href: string;
   label: string;
   name: string;
   desc: string;
   lang: string;
   linkText: string;
   delay?: number;
-  children?: React.ReactNode;
 }
 
-function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0, children }: ProjCardProps) {
-  const ref = useRef<HTMLElement>(null);
+function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0 }: ProjCardProps) {
+  const ref = useRef<HTMLAnchorElement>(null);
   const inView = useInView(ref, { once: true, margin: '-40px 0px' });
 
-  const inner = (
-    <>
-      <div>
-        <div className="proj-label">{label}</div>
-        <h3 className="proj-name">{name}</h3>
-        <p className="proj-desc">{desc}</p>
-        <div className="proj-foot">
-          <span className="proj-lang">{techLang}</span>
-          <span className="proj-link">{linkText}</span>
-        </div>
-      </div>
-      {children}
-    </>
-  );
-
-  if (href) {
-    return (
-      <motion.a
-        ref={ref as React.RefObject<HTMLAnchorElement>}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="proj-card"
-        initial={{ opacity: 0, y: 18 }}
-        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-        transition={{ duration: 0.65, delay: delay / 1000, ease: EASE }}
-        whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
-      >
-        {inner}
-      </motion.a>
-    );
-  }
-
   return (
-    <motion.div
-      ref={ref as React.RefObject<HTMLDivElement>}
-      className="proj-card span-2"
+    <motion.a
+      ref={ref}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="proj-card"
       initial={{ opacity: 0, y: 18 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
       transition={{ duration: 0.65, delay: delay / 1000, ease: EASE }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
     >
-      {inner}
-    </motion.div>
+      <div className="proj-label">{label}</div>
+      <h3 className="proj-name">{name}</h3>
+      <p className="proj-desc">{desc}</p>
+      <div className="proj-foot">
+        <span className="proj-lang">{techLang}</span>
+        <span className="proj-link">{linkText}</span>
+      </div>
+    </motion.a>
   );
 }
 
-/* ── Projects ── */
-function Projects() {
-  const { t } = useLang();
+/* ── Open Source ── */
+const GITHUB_USER = 'tiagolauer';
+const MAX_REPOS = 6;
+const REPO_DESC_OVERRIDES: Partial<Record<string, keyof typeof T.en>> = {
+  OwlSQL: 'p_sql_desc',
+};
+
+interface GithubRepo {
+  id: number;
+  name: string;
+  html_url: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  fork: boolean;
+}
+
+function isFeaturable(repo: GithubRepo) {
   return (
-    <section id="projects">
+    !repo.fork &&
+    repo.name.toLowerCase() !== GITHUB_USER &&
+    Boolean(REPO_DESC_OVERRIDES[repo.name] || repo.description)
+  );
+}
+
+function OpenSource() {
+  const { t } = useLang();
+  const [repos, setRepos] = useState<GithubRepo[] | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`)
+      .then((res) => (res.ok ? (res.json() as Promise<GithubRepo[]>) : Promise.reject()))
+      .then((data) => {
+        if (cancelled) return;
+        setRepos(
+          data
+            .filter(isFeaturable)
+            .sort((a, b) => b.stargazers_count - a.stargazers_count)
+            .slice(0, MAX_REPOS)
+        );
+      })
+      .catch(() => { if (!cancelled) setFailed(true); });
+    return () => { cancelled = true; };
+  }, []);
+
+  return (
+    <section id="open-source">
       <div className="wrap">
         <Reveal className="section-head">
-          <h2 className="section-title">{t('s_proj')}</h2>
+          <h2 className="section-title">{t('s_os')}</h2>
         </Reveal>
-        <div className="proj-grid">
-          <ProjCard
-            label={t('p_feat')}
-            name={t('p_h2k_name')}
-            desc={t('p_h2k_desc')}
-            lang="React Native · TypeScript · Expo"
-            linkText={t('p_prod')}
-          >
-            <div className="code-block" aria-hidden="true">
-              <div className="cb-line"><span className="cb-n">1</span><span className="cm">{'// 8 200 ms → 340 ms · 96% alloc reduction'}</span></div>
-              <div className="cb-line"><span className="cb-n">2</span><span /></div>
-              <div className="cb-line"><span className="cb-n">3</span><span><span className="kw">static</span>{' '}<span className="kw">async</span>{' ValueTask '}<span className="fn">BulkSync</span>{'('}</span></div>
-              <div className="cb-line"><span className="cb-n">4</span><span>{'  ReadOnlyMemory'}<span className="str">{'<Op>'}</span>{' batch,'}</span></div>
-              <div className="cb-line"><span className="cb-n">5</span><span>{'  CancellationToken ct = '}<span className="kw">default</span>{')'}</span></div>
-              <div className="cb-line"><span className="cb-n">6</span><span>{'{'}</span></div>
-              <div className="cb-line"><span className="cb-n">7</span><span>{'  '}<span className="kw">var</span>{' pool = ArrayPool'}<span className="str">{'<byte>'}</span>{'.Shared;'}</span></div>
-              <div className="cb-line"><span className="cb-n">8</span><span>{'  '}<span className="kw">var</span>{' buf  = pool.'}<span className="fn">Rent</span>{'(batch.Length * 256);'}</span></div>
-              <div className="cb-line"><span className="cb-n">9</span><span>{'  '}<span className="fn">SerializeAll</span>{'(batch.Span, buf.'}<span className="fn">AsSpan</span>{'()); '}<span className="cm">{'// zero-copy'}</span></span></div>
-              <div className="cb-line"><span className="cb-n">10</span><span>{'  '}<span className="kw">await</span>{' _repo.'}<span className="fn">UpsertAsync</span>{'(buf, ct);    '}<span className="cm">{'// 1 round-trip'}</span></span></div>
-              <div className="cb-line"><span className="cb-n">11</span><span>{'  pool.'}<span className="fn">Return</span>{'(buf, clearArray: '}<span className="kw">true</span>{');'}</span></div>
-              <div className="cb-line"><span className="cb-n">12</span><span>{'}'}</span></div>
-            </div>
-          </ProjCard>
-
-          <ProjCard
-            href="https://moveismm.com.br/"
-            label="TypeScript"
-            name="Móveis MM"
-            desc={t('p_mm_desc')}
-            lang="TypeScript · Vercel"
-            linkText="Live ↗"
-            delay={80}
-          />
-
-          <ProjCard
-            href="https://ag-algora.vercel.app/"
-            label="TypeScript"
-            name="AG Algora"
-            desc={t('p_algora_desc')}
-            lang="TypeScript · Vercel"
-            linkText="Live ↗"
-            delay={160}
-          />
-        </div>
+        {failed && <p className="proj-desc">{t('os_error')}</p>}
+        {!failed && !repos && <p className="proj-desc">{t('os_loading')}</p>}
+        {repos && repos.length > 0 && (
+          <div className="proj-grid">
+            {repos.map((repo, i) => {
+              const override = REPO_DESC_OVERRIDES[repo.name];
+              return (
+                <ProjCard
+                  key={repo.id}
+                  href={repo.html_url}
+                  label={repo.language ?? 'Code'}
+                  name={repo.name}
+                  desc={override ? t(override) : (repo.description ?? t('os_no_desc'))}
+                  lang={`★ ${repo.stargazers_count}`}
+                  linkText={t('p_github')}
+                  delay={i * 80}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -463,7 +461,7 @@ export default function Page() {
       <About />
       <Skills />
       <Experience />
-      <Projects />
+      <OpenSource />
       <Contact />
       <footer>
         <div className="wrap">
