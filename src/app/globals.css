@@ -359,6 +359,10 @@ section {
   margin-top: clamp(3.5rem, 7vw, 5.5rem);
 }
 
+.skills-stats {
+  max-width: 480px;
+}
+
 .about-cta {
   display: flex;
   align-items: center;

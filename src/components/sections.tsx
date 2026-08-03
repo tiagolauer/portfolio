@@ -149,7 +149,6 @@ const ABOUT_FACTS = [
   { label: 'ab_f1l' as const, value: 'ab_f1v' as const },
   { label: 'ab_f2l' as const, value: 'ab_f2v' as const },
   { label: 'ab_f3l' as const, value: 'ab_f3v' as const },
-  { label: 'ab_f4l' as const, value: 'ab_f4v' as const },
 ];
 
 export function About() {
@@ -175,10 +174,8 @@ export function About() {
           </Reveal>
           <Reveal delay={160}>
             <div className="about-stats">
-              <AnimatedStat rawVal={6}    suffix="+"   label={t('st_yrs')} />
-              <AnimatedStat rawVal={995}  suffix="%" divideBy={10} decimals={1} label={t('st_up')}  />
-              <AnimatedStat rawVal={10}   suffix="K+"  label={t('st_usr')} />
-              <AnimatedStat rawVal={5}    suffix=""    label={t('st_co')}  />
+              <AnimatedStat rawVal={6} suffix="+" label={t('st_yrs')} />
+              <AnimatedStat rawVal={5} suffix=""  label={t('st_co')} />
             </div>
           </Reveal>
         </div>
@@ -187,18 +184,6 @@ export function About() {
           <p>{t('about_p2')}</p>
           <p>{t('about_p3')}</p>
         </Reveal>
-
-        <Reveal className="section-head about-subhead">
-          <h2 className="section-title">{t('ab_how')}</h2>
-        </Reveal>
-        <div>
-          {ABOUT_PRINCIPLES.map(({ title, desc }, i) => (
-            <Reveal key={title} delay={i * 55} className="skill-row">
-              <span className="skill-cat">{t(title)}</span>
-              <span className="skill-items">{t(desc)}</span>
-            </Reveal>
-          ))}
-        </div>
 
         <Reveal className="section-head about-subhead">
           <h2 className="section-title">{t('ab_facts')}</h2>
@@ -245,6 +230,26 @@ export function Skills() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('ab_how')}</h2>
+        </Reveal>
+        <div>
+          {ABOUT_PRINCIPLES.map(({ title, desc }, i) => (
+            <Reveal key={title} delay={i * 55} className="skill-row">
+              <span className="skill-cat">{t(title)}</span>
+              <span className="skill-items">{t(desc)}</span>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('sk_results')}</h2>
+        </Reveal>
+        <Reveal className="about-stats skills-stats">
+          <AnimatedStat rawVal={995} suffix="%" divideBy={10} decimals={1} label={t('st_up')} />
+          <AnimatedStat rawVal={10}  suffix="K+" label={t('st_usr')} />
+        </Reveal>
       </div>
     </section>
   );
