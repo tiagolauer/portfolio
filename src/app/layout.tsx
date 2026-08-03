@@ -2,9 +2,6 @@ import type { Metadata } from 'next';
 import { Unbounded, Figtree } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
 import './globals.css';
-import { LangProvider } from '@/contexts/LangContext';
-import { Nav } from '@/components/Nav';
-import { ScrollProgress } from '@/components/ScrollProgress';
 
 const unbounded = Unbounded({
   subsets: ['latin'],
@@ -36,11 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className={`${unbounded.variable} ${figtree.variable}`}>
       <body>
         <MotionConfig reducedMotion="user">
-          <LangProvider>
-            <ScrollProgress />
-            <Nav />
-            {children}
-          </LangProvider>
+          {children}
         </MotionConfig>
       </body>
     </html>
