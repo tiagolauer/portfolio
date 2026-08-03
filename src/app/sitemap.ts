@@ -3,27 +3,20 @@ import type { MetadataRoute } from 'next';
 export const dynamic = 'force-static';
 
 const SITE_URL = 'https://tiagolauer.dev';
+const PATHS = ['', '/about', '/skills', '/experience', '/open-source', '/contact'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  return [
-    {
-      url: `${SITE_URL}/en`,
+  return (['en', 'pt'] as const).flatMap((lang) => {
+    const other = lang === 'en' ? 'pt' : 'en';
+    return PATHS.map((path) => ({
+      url: `${SITE_URL}/${lang}${path}`,
       lastModified,
-      changeFrequency: 'monthly',
-      priority: 1,
+      changeFrequency: 'monthly' as const,
+      priority: path === '' ? (lang === 'en' ? 1 : 0.9) : 0.8,
       alternates: {
-        languages: { pt: `${SITE_URL}/pt` },
+        languages: { [other]: `${SITE_URL}/${other}${path}` },
       },
-    },
-    {
-      url: `${SITE_URL}/pt`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: 0.9,
-      alternates: {
-        languages: { en: `${SITE_URL}/en` },
-      },
-    },
-  ];
+    }));
+  });
 }

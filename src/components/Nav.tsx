@@ -1,11 +1,24 @@
 'use client';
 
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useLang } from '@/contexts/LangContext';
+import type { Lang } from '@/i18n/strings';
+
+const NAV_LINKS = [
+  { slug: 'about',       key: 'n_about'  },
+  { slug: 'skills',      key: 'n_skills' },
+  { slug: 'experience',  key: 'n_exp'    },
+  { slug: 'open-source', key: 'n_os'     },
+] as const;
 
 export function Nav() {
   const { lang, setLang, t } = useLang();
+  const router = useRouter();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 32);
@@ -13,38 +26,81 @@ export function Nav() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  const switchLang = (next: Lang) => {
+    setLang(next);
+    router.replace(pathname.replace(/^\/(en|pt)(?=\/|$)/, `/${next}`));
+  };
+
   return (
-    <nav id="nav" className={scrolled ? 'scrolled' : ''}>
+    <nav id="nav" className={`${scrolled ? 'scrolled' : ''}${open ? ' menu-open' : ''}`}>
       <div className="wrap">
         <div className="nav-inner">
-          <a href="#hero" className="nav-logo">TL</a>
+          <Link href={`/${lang}`} className="nav-logo">TL</Link>
 
           <ul className="nav-links">
-            <li><a href="#about">{t('n_about')}</a></li>
-            <li><a href="#skills">{t('n_skills')}</a></li>
-            <li><a href="#experience">{t('n_exp')}</a></li>
-            <li><a href="#open-source">{t('n_os')}</a></li>
+            {NAV_LINKS.map(({ slug, key }) => (
+              <li key={slug}>
+                <Link
+                  href={`/${lang}/${slug}`}
+                  className={pathname === `/${lang}/${slug}` ? 'active' : undefined}
+                >
+                  {t(key)}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           <div className="nav-right">
             <div className="lang-toggle" role="group" aria-label="Language">
               <button
                 className={`lang-btn${lang === 'en' ? ' active' : ''}`}
-                onClick={() => setLang('en')}
+                onClick={() => switchLang('en')}
                 aria-label="Switch to English"
                 aria-pressed={lang === 'en'}
               >EN</button>
               <button
                 className={`lang-btn${lang === 'pt' ? ' active' : ''}`}
-                onClick={() => setLang('pt')}
+                onClick={() => switchLang('pt')}
                 aria-label="Mudar para Português"
                 aria-pressed={lang === 'pt'}
               >PT</button>
             </div>
-            <a href="#contact" className="nav-cta">{t('n_contact')}</a>
+            <Link href={`/${lang}/contact`} className="nav-cta">{t('n_contact')}</Link>
+            <button
+              className={`nav-burger${open ? ' open' : ''}`}
+              onClick={() => setOpen(!open)}
+              aria-label={lang === 'pt' ? (open ? 'Fechar menu' : 'Abrir menu') : (open ? 'Close menu' : 'Open menu')}
+              aria-expanded={open}
+            >
+              <span />
+              <span />
+            </button>
           </div>
         </div>
       </div>
+      {open && (
+        <div className="nav-mobile">
+          {NAV_LINKS.map(({ slug, key }) => (
+            <Link
+              key={slug}
+              href={`/${lang}/${slug}`}
+              className={pathname === `/${lang}/${slug}` ? 'active' : undefined}
+            >
+              {t(key)}
+            </Link>
+          ))}
+          <Link
+            href={`/${lang}/contact`}
+            className={pathname === `/${lang}/contact` ? 'active' : undefined}
+          >
+            {t('n_contact')}
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }
