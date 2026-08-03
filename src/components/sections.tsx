@@ -139,8 +139,21 @@ function AnimatedStat({ rawVal, suffix, label, divideBy = 1, decimals = 0, varia
   );
 }
 
+const ABOUT_PRINCIPLES = [
+  { title: 'ab_how1t' as const, desc: 'ab_how1d' as const },
+  { title: 'ab_how2t' as const, desc: 'ab_how2d' as const },
+  { title: 'ab_how3t' as const, desc: 'ab_how3d' as const },
+];
+
+const ABOUT_FACTS = [
+  { label: 'ab_f1l' as const, value: 'ab_f1v' as const },
+  { label: 'ab_f2l' as const, value: 'ab_f2v' as const },
+  { label: 'ab_f3l' as const, value: 'ab_f3v' as const },
+  { label: 'ab_f4l' as const, value: 'ab_f4v' as const },
+];
+
 export function About() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   return (
     <section id="about">
       <div className="wrap">
@@ -169,6 +182,40 @@ export function About() {
             </div>
           </Reveal>
         </div>
+
+        <Reveal className="about-extra">
+          <p>{t('about_p2')}</p>
+          <p>{t('about_p3')}</p>
+        </Reveal>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('ab_how')}</h2>
+        </Reveal>
+        <div>
+          {ABOUT_PRINCIPLES.map(({ title, desc }, i) => (
+            <Reveal key={title} delay={i * 55} className="skill-row">
+              <span className="skill-cat">{t(title)}</span>
+              <span className="skill-items">{t(desc)}</span>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('ab_facts')}</h2>
+        </Reveal>
+        <div>
+          {ABOUT_FACTS.map(({ label, value }, i) => (
+            <Reveal key={label} delay={i * 55} className="skill-row">
+              <span className="skill-cat">{t(label)}</span>
+              <span className="skill-items">{t(value)}</span>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal className="about-cta">
+          <Link href={`/${lang}/experience`} className="btn btn-fill">{t('ab_cta_exp')}</Link>
+          <Link href={`/${lang}/contact`} className="hero-cta-secondary">{t('ab_cta_contact')}</Link>
+        </Reveal>
       </div>
     </section>
   );
