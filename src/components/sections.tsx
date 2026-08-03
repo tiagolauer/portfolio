@@ -380,7 +380,7 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
 }
 
 const GITHUB_USER = 'tiagolauer';
-const MAX_REPOS = 6;
+const FEATURED_REPOS = ['pieces-to-agents', 'owlsql'];
 const REPO_DESC_OVERRIDES: Partial<Record<string, keyof typeof T.en>> = {
   OwlSQL: 'p_sql_desc',
 };
@@ -395,12 +395,8 @@ interface GithubRepo {
   fork: boolean;
 }
 
-function isFeaturable(repo: GithubRepo) {
-  return (
-    !repo.fork &&
-    repo.name.toLowerCase() !== GITHUB_USER &&
-    Boolean(REPO_DESC_OVERRIDES[repo.name] || repo.description)
-  );
+function featuredRank(repo: GithubRepo) {
+  return FEATURED_REPOS.indexOf(repo.name.toLowerCase());
 }
 
 export function OpenSource() {
@@ -416,9 +412,8 @@ export function OpenSource() {
         if (cancelled) return;
         setRepos(
           data
-            .filter(isFeaturable)
-            .sort((a, b) => b.stargazers_count - a.stargazers_count)
-            .slice(0, MAX_REPOS)
+            .filter((repo) => featuredRank(repo) >= 0)
+            .sort((a, b) => featuredRank(a) - featuredRank(b))
         );
       })
       .catch(() => { if (!cancelled) setFailed(true); });
