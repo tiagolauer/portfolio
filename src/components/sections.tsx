@@ -380,7 +380,7 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
 }
 
 const GITHUB_USER = 'tiagolauer';
-const MAX_REPOS = 6;
+const FEATURED_REPOS = ['pieces-to-agents', 'owlsql'];
 const REPO_DESC_OVERRIDES: Partial<Record<string, keyof typeof T.en>> = {
   OwlSQL: 'p_sql_desc',
 };
@@ -395,18 +395,32 @@ interface GithubRepo {
   fork: boolean;
 }
 
-function isFeaturable(repo: GithubRepo) {
-  return (
-    !repo.fork &&
-    repo.name.toLowerCase() !== GITHUB_USER &&
-    Boolean(REPO_DESC_OVERRIDES[repo.name] || repo.description)
-  );
+function featuredRank(repo: GithubRepo) {
+  return FEATURED_REPOS.indexOf(repo.name.toLowerCase());
 }
 
 export function OpenSource() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [repos, setRepos] = useState<GithubRepo[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(
+      FEATURED_REPOS.map((pkg) =>
+        fetch(`https://api.npmjs.org/downloads/point/last-week/${pkg}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data: { downloads?: number } | null) =>
+            data?.downloads ? ([pkg, data.downloads] as const) : null
+          )
+          .catch(() => null)
+      )
+    ).then((entries) => {
+      if (!cancelled) setDownloads(Object.fromEntries(entries.filter(Boolean) as (readonly [string, number])[]));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -416,9 +430,8 @@ export function OpenSource() {
         if (cancelled) return;
         setRepos(
           data
-            .filter(isFeaturable)
-            .sort((a, b) => b.stargazers_count - a.stargazers_count)
-            .slice(0, MAX_REPOS)
+            .filter((repo) => featuredRank(repo) >= 0)
+            .sort((a, b) => featuredRank(a) - featuredRank(b))
         );
       })
       .catch(() => { if (!cancelled) setFailed(true); });
@@ -437,6 +450,10 @@ export function OpenSource() {
           <div className="proj-grid">
             {repos.map((repo, i) => {
               const override = REPO_DESC_OVERRIDES[repo.name];
+              const weekly = downloads[repo.name.toLowerCase()];
+              const stats = weekly
+                ? `★ ${repo.stargazers_count} · ${weekly.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')} ${t('p_npm')}`
+                : `★ ${repo.stargazers_count}`;
               return (
                 <ProjCard
                   key={repo.id}
@@ -444,7 +461,7 @@ export function OpenSource() {
                   label={repo.language ?? 'Code'}
                   name={repo.name}
                   desc={override ? t(override) : (repo.description ?? t('os_no_desc'))}
-                  lang={`★ ${repo.stargazers_count}`}
+                  lang={stats}
                   linkText={t('p_github')}
                   delay={i * 80}
                 />
