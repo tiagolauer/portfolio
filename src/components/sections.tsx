@@ -381,6 +381,10 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
 
 const GITHUB_USER = 'tiagolauer';
 const FEATURED_REPOS = ['pieces-to-agents', 'owlsql'];
+const NPM_PACKAGES: Record<string, string> = {
+  'pieces-to-agents': 'pieces-to-agents',
+  owlsql: '@owlsql/core',
+};
 const REPO_DESC_OVERRIDES: Partial<Record<string, keyof typeof T.en>> = {
   OwlSQL: 'p_sql_desc',
 };
@@ -408,11 +412,11 @@ export function OpenSource() {
   useEffect(() => {
     let cancelled = false;
     Promise.all(
-      FEATURED_REPOS.map((pkg) =>
+      Object.entries(NPM_PACKAGES).map(([repo, pkg]) =>
         fetch(`https://api.npmjs.org/downloads/point/last-week/${pkg}`)
           .then((res) => (res.ok ? res.json() : null))
           .then((data: { downloads?: number } | null) =>
-            data?.downloads ? ([pkg, data.downloads] as const) : null
+            data?.downloads ? ([repo, data.downloads] as const) : null
           )
           .catch(() => null)
       )
