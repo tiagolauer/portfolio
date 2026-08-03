@@ -400,9 +400,27 @@ function featuredRank(repo: GithubRepo) {
 }
 
 export function OpenSource() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [repos, setRepos] = useState<GithubRepo[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(
+      FEATURED_REPOS.map((pkg) =>
+        fetch(`https://api.npmjs.org/downloads/point/last-week/${pkg}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data: { downloads?: number } | null) =>
+            data?.downloads ? ([pkg, data.downloads] as const) : null
+          )
+          .catch(() => null)
+      )
+    ).then((entries) => {
+      if (!cancelled) setDownloads(Object.fromEntries(entries.filter(Boolean) as (readonly [string, number])[]));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -432,6 +450,10 @@ export function OpenSource() {
           <div className="proj-grid">
             {repos.map((repo, i) => {
               const override = REPO_DESC_OVERRIDES[repo.name];
+              const weekly = downloads[repo.name.toLowerCase()];
+              const stats = weekly
+                ? `★ ${repo.stargazers_count} · ${weekly.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')} ${t('p_npm')}`
+                : `★ ${repo.stargazers_count}`;
               return (
                 <ProjCard
                   key={repo.id}
@@ -439,7 +461,7 @@ export function OpenSource() {
                   label={repo.language ?? 'Code'}
                   name={repo.name}
                   desc={override ? t(override) : (repo.description ?? t('os_no_desc'))}
-                  lang={`★ ${repo.stargazers_count}`}
+                  lang={stats}
                   linkText={t('p_github')}
                   delay={i * 80}
                 />
