@@ -296,6 +296,14 @@ const JOBS = [
     highlights: ['brav1', 'brav2'] as const,
     stack: ['Angular', 'JavaScript', 'HTML5', 'CSS3'],
   },
+  {
+    company: 'Freelance',
+    roleKey: 'r_free' as const,
+    period: ['Jan 2019', 'Feb 2022'],
+    loc: 'Brusque, Brazil · Remote',
+    highlights: ['free1', 'free2', 'free3'] as const,
+    stack: ['React Native', 'Redux', 'TypeScript', 'JavaScript', 'Firebase', 'Node.js'],
+  },
 ] as const;
 
 export function Experience() {
