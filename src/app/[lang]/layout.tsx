@@ -82,10 +82,6 @@ const jsonLd = {
     'mailto:tiagoestrelalauer@gmail.com',
   ],
   jobTitle: 'Full-Stack Technical Lead',
-  worksFor: {
-    '@type': 'Organization',
-    name: 'ohubdev',
-  },
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Brusque',
