@@ -1,0 +1,64 @@
+export const meta = {
+  title: 'One in five bullets belonged to another project',
+  description: 'Filtering by session does not work, because the session is the wrong size. Field notes from pieces-to-agents, entry 2.',
+  date: '2026-08-04',
+  tags: ['Privacy', 'Coding agents', 'Open Source'],
+};
+
+*Field notes from pieces-to-agents, entry 2*
+
+There was a session in my history called "OwlSQL Refactoring and Job Search". The title is embarrassingly honest: that afternoon I refactored a project and looked for a job, in that order, in the same window. Pieces recorded both together because they happened together.
+
+In the [previous post](/en/blog/my-tool-leaked-a-salary-negotiation) I told how the first version of the tool nearly wrote a salary negotiation into a client repository, and how the fix was to start filtering by session title. This post is about the discovery that came next: **filtering by session does not work, because the session is the wrong size.**
+
+Real sessions are mixed. My life does not open a new session when I change subjects.
+
+## I measured, and the number was worse than I expected
+
+I ran the tool on a repository with four months of history and read the output line by line. Of every five bullets that made it past the session filter, one was about something else: job listings, a neighboring project that is not even mine, hosting support for client domains that have nothing to do with the repository, and gameplay. Video games, in the middle of a database project's context file.
+
+None of those bullets were lies. All of them happened. They just did not happen *there*.
+
+The fix was to push the filter down one level: stop asking "is this session about the project?" and start asking "is **this line** about the project?". Every bullet now has to touch the repository's own vocabulary, which the tool builds by itself from file and folder names, from `package.json`, and from any aliases you pass in. A bullet Pieces tagged with an identified person is dropped without appeal, no matter what it says.
+
+On the same repository, the eleven off-topic bullets became two. The two survivors mentioned the neighboring project, which shares work sessions with mine. One line in the deny-list and they were gone.
+
+## Every path into the file is a leak path
+
+Then I made the classic mistake: I thought I was done. The versions that followed were a lesson in humility, each one on a path I had not been watching.
+
+The deny-list masked the term instead of removing the line, because redaction ran before the filter. What survived was a bullet about the license file that read, literally, "[redacted] Lauer". My last name, with the rest hidden. Masking a name in the middle of a sentence protects nothing: **the sentence around a name is usually about that name.** Today a denied term takes down the whole bullet.
+
+The session title went straight into the file without passing through any redaction. One run produced the header "OwlSQL Auditing and Hostinger Troubleshooting" with Hostinger already registered in the deny-list. Every bullet underneath was clean; the leak was in the frame. Titles now go through the same funnel.
+
+One run leaked a third party's name next to an international phone number. Absolute paths exposed my machine's folder structure, client names included. Each of those cases became a new redaction pattern, and each had sailed untouched past everything that existed before it.
+
+The rule left over from this phase is boring and absolute: if a piece of text has any way of reaching the file, it goes through the same filters as everything else. The frame gets the same treatment as the painting.
+
+## Grammar became a privacy filter
+
+My favorite part of this phase is not a security filter. It is an observation about language.
+
+After cleaning out what belonged to other projects, noise remained: lists of visited pages, loose file paths, and above all intentions. "Fix the parser bug tomorrow" is the kind of line that ages horribly in a context file. An agent reads it months later as an open task and goes off trying to fix a bug that died long ago.
+
+The way out was verb tense. **Memory speaks in the past tense.** What happened becomes "fixed", "discovered". A pending task speaks in the imperative, "fix the bug", "update the docs", and a reference has no verb at all. So the filter now requires every bullet to open with a past-tense verb. The imperative is dropped: yesterday's intention is not memory, it is a stale task posing as urgent. Verbless lines are dropped with it, since a list of visited pages carries no decision.
+
+It is a filter that would fit in a tweet, and it held back more noise than any sophisticated heuristic I tried before it. Grammar had already solved the problem; I just had to stop ignoring what it was saying.
+
+## The honest number at the end
+
+Final tally for this phase: off-topic bullets fell from twenty percent to under four. The ones that remained were about the neighboring project, and they left through one line of deny-list, not through a new filter.
+
+Under four is not zero, and I do not promise zero. What the filters buy is something else: **a diff short enough to actually be read.** Twenty percent noise across forty bullets is a diff you skim and approve tired. Four percent is a diff where one strange line jumps out.
+
+The filter does not replace reading. It makes reading possible.
+
+The next entry changes layers: what I learned implementing the MCP client by hand, including a server that answered correctly in a way my parser insisted on calling an error.
+
+The code is still at [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), and the test is still one command:
+
+```bash
+npx pieces-to-agents
+```
+
+So: what percentage of your work history would you bet is actually just work? I bet high before measuring. I lost.

@@ -1,0 +1,78 @@
+export const meta = {
+  title: 'My tool leaked a salary negotiation',
+  description: 'The first time I ran my own tool on a client repository, it offered to commit a salary negotiation. Field notes from pieces-to-agents, entry 1.',
+  date: '2026-08-01',
+  tags: ['Privacy', 'Coding agents', 'MCP', 'Open Source'],
+};
+
+*Field notes from pieces-to-agents, entry 1*
+
+The first time I ran my tool on a client repository, it proposed writing this into a project file: a salary negotiation of mine, a code audit I had done for someone else, and account recovery details. All in one diff, waiting for my "y".
+
+I built the tool. I wrote the filter. And the filter let it through.
+
+These notes exist to record how you fix something like that, in the order it broke.
+
+## Every agent starts with amnesia
+
+Every coding agent starts the session with amnesia. Claude Code, Cursor, Copilot: you open the project and it has no idea why the code looks the way it does, what was decided back in March, which bug cost a week. The default answer became the context file, the `AGENTS.md` or `CLAUDE.md` at the root of the repository. Almost nobody keeps those files current. Writing down what you already know is the first task anyone drops when things get tight.
+
+Meanwhile, there is a program running on my machine that records everything. PiecesOS captures what crosses the screen all day and condenses it into searchable memories: the decisions, the bugs, the dead ends. Four months of project history, written by itself, sitting in a local database.
+
+On one side, a file nobody fills in. On the other, a database that fills itself. The bridge was too obvious not to build: a CLI that reads the memory over MCP and writes into a block of the context file whatever belongs to that repository. `npx pieces-to-agents`, a diff shows up, you approve it or you don't.
+
+The first version worked on day one. The damage came with it.
+
+## The bug fit in one word: "mention"
+
+The initial logic was reasonable on paper: find sessions that mention the project, pull the summaries, filter, write. The defect was in "mention". I was searching the entire session content, title and body.
+
+Real work sessions cite other subjects constantly. One line saying "opened project X to compare" was enough to make the whole session eligible. That is how a session with a passing mention of the client repository dumped the rest of that afternoon into the diff: the job offer I was negotiating, someone else's code I had audited, the account I had helped recover.
+
+None of it was ever written to disk. The manually approved diff existed since commit one, and it is what held. But I sat looking at that screen for a while. If I had added a `--yes` flag for convenience, the way nearly every CLI does, that text would be in a versioned file, probably committed, possibly public.
+
+The tool had done nothing wrong by its own criteria. **The criteria were wrong.** Personal memory is not a neutral corpus: it is your work mixed with your life, and any search broad enough will bring back both.
+
+## Everything the project is today came out of that scare
+
+Nearly every design decision since then descends from that moment.
+
+Eligibility now reads the session title only. Pieces names sessions after what you actually worked on, so the title is the strongest signal available. A passing mention in the body no longer pulls in a session.
+
+That was not enough. Real sessions are mixed. One was literally called "OwlSQL Refactoring and Job Search". Half project, half job hunting, and the honest title admitted both. So the filter dropped to the bullet level: every line has to touch the project's own vocabulary, built from file and folder names, from `package.json`, and from any aliases you pass in. On a repository with four months of history, that took off-topic bullets from twenty percent down to under four.
+
+Names, employers and client codenames went into a local deny-list, and a bullet that mentions a denied term is removed whole rather than masked, because the sentence around a name is usually about that name. Emails, tokens, keys and phone numbers are swapped for placeholders automatically. And the personal profile Pieces maintains about you, a hierarchical summary of who you are, the tool refuses to read at all.
+
+The diff is still the centerpiece, and still has no flag to skip it. That absence is the design decision I am most sure about.
+
+## The part that still bothers me
+
+There is a detail more uncomfortable than privacy, and it took me a while to see it.
+
+Everything the tool writes came from text that appeared on a screen. A web page, a pull request description, a document someone sent you. If PiecesOS saw it, the summary can quote it, and the quote can land in a file that an agent treats as instructions. Text written to be obeyed by an agent survives that entire trip intact.
+
+My filters look for private data. They cannot tell a decision I made from a sentence someone wrote to be found. So the README says it outright: **read the diff as if part of it came from a stranger, because part of it did.**
+
+## Now the diff knows how to point
+
+Version 0.1.18 shipped this week. The pipeline is stable: two search strategies per category (vector search understands paraphrase but cannot see freshly created memory, full-text is the opposite, so both run), summaries Pieces already wrote in markdown, filter, redaction, diff. The whole chain answers in about 70 milliseconds; the alternative API path, which returns raw screen OCR, takes over 3 seconds and brings back exactly the kind of material I do not want to touch.
+
+What is new in 0.1.18 attacks the weak point of the deny-list: it only protects against names you already registered, which means the first leak of any name depends on your eye on the diff. Now capitalized words that belong neither to the project vocabulary nor to a list of known technologies are highlighted and listed as possible proper nouns. Nothing is removed on its own. The list exists so an unexpected name jumps out of the diff instead of hiding in it. On the first run against real memory, it flagged exactly one term: the name of a neighboring project, the same one I had to deny by hand months earlier.
+
+Limits that remain: the bullet filters only read English, the capitalization heuristic misses lowercase names, and nothing verifies whether a memory is true. The summaries are written by a model, and one real run already reported a version number with an extra digit. The diff is a fact review too, not only a privacy review.
+
+## The contract for this series
+
+I am going to post what breaks, in the order it breaks, including what breaks through my own fault. The project changelog already works this way, each version documenting the real bug that motivated it, and the blog will follow the same pattern with more context and less modesty.
+
+If you use PiecesOS and a coding agent, you can try it on any git repository:
+
+```bash
+npx pieces-to-agents
+```
+
+**Read the diff before you approve it. That sentence is the entire product.**
+
+The code is at [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), MIT, and the README has a privacy section I would rewrite as a whole post one day. Issues and skepticism are welcome.
+
+So: would you let a tool write into a file your agent reads as instructions? Run it once and tell me what showed up in your diff. I bet there is something in there you would not want to commit.

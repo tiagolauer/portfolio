@@ -1,0 +1,64 @@
+export const meta = {
+  title: 'A promessa que minha ferramenta imprimia era falsa',
+  description: 'Auditei minha própria ferramenta fingindo que o código era de um estranho. Saíram treze defeitos, incluindo um vazamento na feature que existia para impedir vazamentos. Diário de bordo do pieces-to-agents, entrada 4.',
+  date: '2026-08-07',
+  tags: ['Privacidade', 'Agentes de código', 'Open Source'],
+};
+
+*Diário de bordo do pieces-to-agents, entrada 4*
+
+Toda run do pieces-to-agents imprime uma linha antes do prompt de confirmação: "Add terms to `.pieces-to-agents-ignore` to redact them permanently". Redigir permanentemente. Está escrito, em toda execução, desde cedo na vida do projeto.
+
+Durante algumas versões, "permanently" foi mentira. E eu só descobri porque resolvi auditar minha própria ferramenta fingindo que o código era de um estranho. Saíram treze defeitos de uma sentada. Esse post é sobre os melhores, começando pelo que doeu mais.
+
+## O vazamento nasceu de um conserto
+
+Para entender o buraco, preciso contar a versão anterior. A 0.1.16 consertou um defeito real: cada run substituía o bloco gerenciado inteiro em vez de acrescentar. Você voltava depois de duas semanas com o `--days` padrão e as decisões registradas um mês antes tinham evaporado, com só o diff de aviso. Arquivo de contexto que esquece é um caderno que se apaga sozinho. O conserto: entradas que a busca atual não retorna mais são mantidas, e uma antiga só sai quando quatro mais novas a empurram.
+
+Conserto certo. Eu faria de novo. Só que as entradas mantidas eram copiadas literalmente da versão anterior do arquivo, e o caminho delas não passava pela deny-list.
+
+O cenário que isso cria é exatamente o pior: um nome vaza numa run, você percebe, adiciona o nome na deny-list, roda de novo confiante na promessa impressa na tela. A run seguinte filtra o nome de tudo que é novo e **mantém intacta a entrada antiga, que é justamente a que vazou.** O termo negado ficava no arquivo para sempre, protegido pela feature que existia para proteger você.
+
+Hoje bullet mantido que menciona termo negado cai, cabeçalho mantido passa pela redação, e entrada mantida que fica sem bullet limpo some inteira. Mas a lição que fica não é sobre deny-list: **toda feature nova é superfície nova.** O vazamento não estava em código novo nem em código velho. Estava na costura entre dois consertos corretos.
+
+## O filtro envenenado pelos próprios arquivos da ferramenta
+
+Meu defeito favorito da auditoria, pela ironia. O vocabulário que ancora os bullets é montado com os nomes dos arquivos na raiz do repositório. E o que existe na raiz de qualquer repositório que já usou esta ferramenta? `AGENTS.md`. Às vezes `CLAUDE.md`.
+
+Ou seja: a ferramenta escrevia os arquivos que envenenavam o próprio filtro. "claude" e "agents" viravam âncoras válidas, e como toda memória vem de sessão com assistente de código, quase qualquer bullet citando Claude passava como trabalho do projeto. Instalar o app desktop passou. Conectar o assistente num quadro de tarefas passou. O filtro cuja função é barrar o que não é do projeto tratava o nome do assistente como assunto do projeto.
+
+Nomes de assistentes e o vocabulário de framework que todo projeto tem, "model", "route", "component", "hook" e companhia, viraram termos genéricos que não ancoram nada. Com a exceção certa: projeto que se chama "agents" mantém o próprio nome, porque `--project` e `--alias` entram inteiros, passando por cima da lista genérica.
+
+Na mesma família, mais dois buracos no vocabulário. A lista de pastas ignoradas só valia na raiz, então um diretório de primeiro nível contribuía filhos como `dist` e `coverage` de âncora, e bullet de outro projeto falando "dist" entrava. E um BOM no início do `package.json` do repositório alvo fazia o `JSON.parse` estourar dentro de um catch vazio, descartando em silêncio o nome do pacote e todas as dependências do vocabulário. Esse mesmo bug de BOM eu já tinha consertado na 0.1.2, no `package.json` da própria ferramenta. **Bug não morre. Bug troca de roupa e volta.**
+
+## "marco" achava "Marconi Radio"
+
+O casamento de projeto tinha defeito nas duas direções, o que é um jeito educado de dizer que estava errado por completo.
+
+Largo demais: o fallback que compara nomes sem separador buscava substring, então um projeto chamado `marco` casava com uma sessão intitulada "Marconi Radio". As letras estão lá dentro, o resto é detalhe. Agora a forma emendada precisa igualar uma sequência contígua de tokens inteiros do título.
+
+Estreito demais: um termo de vocabulário com separador não casava com nada, nunca. Um projeto chamado `to-do` ficava sem âncora funcional alguma, porque "to" e "do" caem no piso de comprimento e "to-do" inteiro não batia com token nenhum. Termo multi-palavra agora casa como sequência de tokens.
+
+Dois defeitos opostos no mesmo comparador, os dois invisíveis até alguém tropeçar. Filtro de segurança errado para os dois lados é pior que ausente: largo vaza, estreito silencia, e os dois parecem funcionando.
+
+## As mentiras pequenas
+
+O resto da lista é miúdo, e é o miúdo que corrói confiança.
+
+O prompt oferecia "escrever N memórias" contando novas mais mantidas, soando como se N fosse só novidade; a mensagem final dizia outro número. Ctrl+C no prompt de confirmação travava o processo em vez de cancelar, um detalhe de terminal em modo raw que engolia o sinal. Cancelar tinha voltado a imprimir em vermelho como se recusar um diff fosse falha, sendo que recusar o diff é a ferramenta funcionando. O arquivo temporário de escrita usava nome fixo, então duas runs simultâneas se atropelavam e uma falha deixava lixo para sempre.
+
+Nenhum desses derruba nada sozinho. Juntos, formam uma ferramenta que diz uma coisa e faz outra em vários lugares pequenos. Auditoria serve para isso: não achar o bug espetacular, e sim alinhar cada frase que o programa imprime com o que ele de fato faz.
+
+## O que a auditoria não conserta
+
+A deny-list saiu da auditoria funcionando como prometido: termo negado agora morre em todo caminho, novo ou mantido. Mas ela continua com o defeito de nascença que nenhum conserto interno resolve: ela só conhece os nomes que você já cadastrou. O primeiro vazamento de qualquer nome novo continua dependendo do seu olho no diff.
+
+A próxima entrada é sobre atacar exatamente isso, e é a que me traz ao presente do projeto.
+
+Código em [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), teste com:
+
+```bash
+npx pieces-to-agents
+```
+
+E você, qual frase o seu programa imprime com confiança que você nunca verificou de ponta a ponta? A minha dizia "permanently". Auditar o próprio texto foi mais constrangedor que auditar o próprio código.

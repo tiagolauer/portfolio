@@ -1,0 +1,66 @@
+export const meta = {
+  title: 'O servidor avisou. Meu cliente jogou o aviso fora.',
+  description: 'Três bugs de transporte MCP com a mesma anatomia: a informação certa existia e foi descartada no caminho. Diário de bordo do pieces-to-agents, entrada 3.',
+  date: '2026-08-05',
+  tags: ['Agentes de código', 'MCP', 'Open Source'],
+};
+
+*Diário de bordo do pieces-to-agents, entrada 3*
+
+Por várias versões, pedir um ano de histórico matava a ferramenta com uma mensagem inútil: "a chamada ao servidor falhou". Toda vez. `--days 365`, erro genérico, fim.
+
+Passei um bom tempo desconfiando do PiecesOS. Aí fui ler o que o servidor de fato respondia antes do meu código engolir: `Array length must be <= 100`. A API de anotações aceita no máximo cem identificadores por lote, minha busca larga mandava mais que isso, e o servidor explicava o limite com todas as letras em cada resposta. **Quem escondia a causa não era o servidor. Era o meu cliente**, que recebia o erro JSON-RPC, jogava o detalhe fora e imprimia a frase genérica que eu tinha escrito meses antes.
+
+Esse post é sobre a camada que ninguém vê quando funciona: o transporte. Falar MCP na mão, sem SDK, e pagar cada centavo dessa escolha.
+
+## Sem SDK, por teimosia e por lucro
+
+O cliente MCP do pieces-to-agents é `fetch` cru contra `localhost:39300`. Nada de biblioteca de vendor.
+
+Metade da decisão foi princípio: a ferramenta fala com a mesma interface pública que qualquer cliente MCP usa, então nada dela depende de um pacote que pode mudar de licença ou de rumo. A outra metade foi vontade de aprender o protocolo de verdade, e essa metade cobrou caro. SDK esconde exatamente a classe de bug que eu passei três versões consertando. Quando você escreve o transporte, os bugs do transporte são seus.
+
+Não me arrependo. Mas vale registrar que "não me arrependo" é o que a gente diz depois que os bugs acabam.
+
+## A resposta certa que meu parser chamava de erro
+
+O caso mais bonito da série. Meu cliente mandava o header `Accept: text/event-stream`, como o transporte HTTP do MCP pede. Só que o parser só sabia ler JSON puro no corpo da resposta.
+
+O detalhe que eu tinha ignorado na spec: com aquele header, o servidor tem o direito de responder embrulhando o JSON num evento SSE, aquele formato de `data:` linha a linha. Resposta perfeitamente válida, prevista no protocolo que eu dizia aceitar. Meu parser olhava aquilo, não conseguia fazer `JSON.parse` da primeira linha e reportava falha genérica. **Eu anunciava um formato no header e processava outro.** O servidor estava certo das duas formas possíveis e eu, errado das duas também.
+
+O primeiro conserto varria o corpo atrás do primeiro evento cujo `data` parseasse como JSON. Funcionou por quatro versões, até esbarrar num servidor que manda uma notificação antes da resposta. Notificação também é JSON válido, então meu "primeiro que parsear" pegava a mensagem errada e quebrava toda chamada de novo. O conserto de verdade, que devia ter sido o primeiro: casar a resposta pelo id da requisição, que é como JSON-RPC sempre quis que fosse.
+
+Ler a spec pela metade me custou dois bugs no mesmo lugar, com quatro versões de intervalo.
+
+## Erro genérico é informação jogada fora
+
+O caso do `Array length` mudou como eu penso mensagem de erro.
+
+Fui caçar onde mais a ferramenta resumia a verdade e achei uma coleção. Falha de chamada que não dizia qual das dezenas de tools estava sendo chamada. Recusa HTTP que não mostrava o status. E a pior: timeout no handshake dizia "PiecesOS não está acessível, inicie o PiecesOS". O processo estava rodando, só estava ocupado indexando. A mensagem mandava a pessoa reiniciar um programa saudável, o que além de não resolver ainda atrasava a indexação que era a causa real.
+
+Hoje cada falha nomeia a tool, mostra o status quando existe e separa timeout de inacessível, porque os dois pedem reações opostas: um pede espera, o outro pede investigação. Nada disso é engenharia sofisticada. É só parar de traduzir informação boa para frase vaga.
+
+## O que o Pieces me contou sem querer
+
+Escrever o transporte na mão tem um efeito colateral: você acaba medindo tudo. Três descobertas que ficaram.
+
+As quatro buscas por categoria rodavam em fila, uma esperando a outra, e são independentes. Rodar em paralelo levou uma run real de 17 segundos para menos de 2. Nenhuma otimização esperta, só parar de enfileirar o que nunca precisou de fila.
+
+A busca vetorial não enxerga memória recém-criada, porque o índice de embeddings atualiza de forma assíncrona. A full-text acha na hora, mas só o que bate literal. Cada uma cobre a cegueira da outra, e é por isso que a ferramenta roda as duas em toda categoria.
+
+E o filtro `created` da busca vetorial retorna nada. A mesma consulta devolve cinco resultados sem o filtro e zero com ele. A janela de tempo é aplicada do meu lado depois de buscar, porque a alternativa era confiar num parâmetro que responde silêncio.
+
+Tem mais coisa curiosa nesse servidor: a sonda que acompanha o repositório listou 69 tools expostas, e o caminho "oficial" de perguntar à memória, `ask_memory`, leva mais de 3 segundos e devolve OCR cru de tela. A cadeia de resumos que a ferramenta usa responde em uns 70 milissegundos com markdown pronto. Às vezes o caminho bom da API não é o que tem o nome bonito.
+
+## A lição que atravessa as três
+
+Os três bugs graves dessa camada têm a mesma anatomia: a informação certa existia e foi descartada no caminho. O erro do servidor virou frase genérica. A resposta SSE válida virou falha de parse, e uma notificação passou por resposta porque ninguém conferiu o id. Em nenhum momento faltou dado. Faltou meu código respeitar o dado que já tinha na mão.
+
+Na próxima entrada, a auditoria que achou treze defeitos de uma vez, incluindo um vazamento que a ferramenta prometia impedir em toda run.
+
+O código está em [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), e testar continua sendo:
+
+```bash
+npx pieces-to-agents
+```
+
+E você, quando foi a última vez que leu o corpo cru de um erro antes do seu código resumir ele pra você? Eu tinha a resposta completa logada há duas versões. Só não tinha olhado.

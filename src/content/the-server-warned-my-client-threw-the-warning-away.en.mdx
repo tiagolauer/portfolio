@@ -1,0 +1,66 @@
+export const meta = {
+  title: 'The server warned me. My client threw the warning away.',
+  description: 'Three MCP transport bugs with the same anatomy: the right information existed and was discarded on the way. Field notes from pieces-to-agents, entry 3.',
+  date: '2026-08-05',
+  tags: ['Coding agents', 'MCP', 'Open Source'],
+};
+
+*Field notes from pieces-to-agents, entry 3*
+
+For several versions, asking for a year of history killed the tool with a useless message: "the server call failed". Every time. `--days 365`, generic error, the end.
+
+I spent a good while suspecting PiecesOS. Then I went and read what the server was actually answering before my code swallowed it: `Array length must be <= 100`. The annotations API accepts at most a hundred identifiers per batch, my wide search was sending more than that, and the server spelled the limit out in full in every response. **The one hiding the cause was not the server. It was my client**, which received the JSON-RPC error, threw the detail away, and printed the generic sentence I had written months earlier.
+
+This post is about the layer nobody sees while it works: transport. Speaking MCP by hand, without an SDK, and paying every cent of that choice.
+
+## No SDK, out of stubbornness and profit
+
+The pieces-to-agents MCP client is raw `fetch` against `localhost:39300`. No vendor library.
+
+Half the decision was principle: the tool speaks to the same public interface any MCP client uses, so none of it depends on a package that can change license or direction. The other half was wanting to learn the protocol for real, and that half charged dearly. An SDK hides exactly the class of bug I spent three versions fixing. When you write the transport, the transport's bugs are yours.
+
+I do not regret it. But it is worth recording that "I do not regret it" is what we say after the bugs are over.
+
+## The correct response my parser called an error
+
+The prettiest case in the series. My client sent the `Accept: text/event-stream` header, as MCP's HTTP transport asks. But the parser only knew how to read plain JSON in the response body.
+
+The detail I had skipped in the spec: with that header, the server has the right to answer by wrapping the JSON in an SSE event, that line-by-line `data:` format. A perfectly valid response, provided for in the protocol I claimed to accept. My parser looked at it, failed to `JSON.parse` the first line, and reported a generic failure. **I was announcing one format in the header and processing another.** The server was right in both possible ways, and I was wrong in both too.
+
+The first fix scanned the body for the first event whose `data` parsed as JSON. It worked for four versions, until it hit a server that sends a notification before the response. A notification is valid JSON too, so my "first one that parses" grabbed the wrong message and broke every call all over again. The real fix, which should have been the first one: match the response by request id, the way JSON-RPC always wanted it done.
+
+Reading the spec halfway cost me two bugs in the same place, four versions apart.
+
+## A generic error is information thrown away
+
+The `Array length` case changed how I think about error messages.
+
+I went hunting for other places where the tool summarized the truth and found a collection. A call failure that did not say which of the dozens of tools was being called. An HTTP refusal that did not show the status. And the worst one: a handshake timeout said "PiecesOS is not reachable, start PiecesOS". The process was running, it was just busy indexing. The message told the person to restart a healthy program, which besides not helping also delayed the indexing that was the real cause.
+
+Today every failure names the tool, shows the status when there is one, and separates timeout from unreachable, because the two call for opposite reactions: one asks for patience, the other for investigation. None of this is sophisticated engineering. It is just refusing to translate good information into a vague sentence.
+
+## What Pieces told me by accident
+
+Writing the transport by hand has a side effect: you end up measuring everything. Three findings that stuck.
+
+The four searches per category ran in line, each waiting for the previous one, and they are independent. Running them in parallel took a real run from 17 seconds to under 2. No clever optimization, just no longer queueing what never needed a queue.
+
+Vector search cannot see freshly created memory, because the embeddings index updates asynchronously. Full-text finds it instantly, but only what matches literally. Each covers the other's blindness, and that is why the tool runs both on every category.
+
+And the vector search's `created` filter returns nothing. The same query gives five results without the filter and zero with it. The time window is applied on my side after searching, because the alternative was trusting a parameter that answers with silence.
+
+There is more oddity in that server: the probe that ships with the repository listed 69 exposed tools, and the "official" way of asking the memory, `ask_memory`, takes over 3 seconds and returns raw screen OCR. The summary chain the tool uses answers in about 70 milliseconds with ready markdown. Sometimes the good path through an API is not the one with the pretty name.
+
+## The lesson that runs through all three
+
+The three serious bugs at this layer share one anatomy: the right information existed and was discarded on the way. The server's error became a generic sentence. The valid SSE response became a parse failure, and a notification passed for a response because nobody checked the id. At no point was data missing. What was missing was my code respecting the data it already held.
+
+In the next entry, the audit that found thirteen defects at once, including a leak the tool promised to prevent on every run.
+
+The code is at [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), and trying it is still:
+
+```bash
+npx pieces-to-agents
+```
+
+So: when was the last time you read the raw body of an error before your code summarized it for you? I had the full answer logged two versions back. I just had not looked.

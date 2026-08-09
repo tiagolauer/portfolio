@@ -1,0 +1,78 @@
+export const meta = {
+  title: 'Minha ferramenta vazou uma negociação salarial',
+  description: 'A primeira execução da minha ferramenta num repositório de cliente propôs commitar uma negociação salarial. Diário de bordo do pieces-to-agents, entrada 1.',
+  date: '2026-08-01',
+  tags: ['Privacidade', 'Agentes de código', 'MCP', 'Open Source'],
+};
+
+*Diário de bordo do pieces-to-agents, entrada 1*
+
+A primeira vez que rodei minha ferramenta num repositório de cliente, ela propôs escrever num arquivo do projeto: uma negociação de salário minha, a auditoria de código de um terceiro e detalhes de recuperação de uma conta. Tudo num diff, esperando meu "y".
+
+Eu construí a ferramenta. Eu escrevi o filtro. E o filtro deixou passar.
+
+Esse diário existe para contar como se conserta uma coisa dessas, na ordem em que quebrou.
+
+## Todo agente começa com amnésia
+
+Todo agente de código começa a sessão com amnésia. Claude Code, Cursor, Copilot: você abre o projeto e ele não sabe por que o código é do jeito que é, qual decisão foi tomada em março, qual bug custou uma semana. A resposta padrão virou o arquivo de contexto, o `AGENTS.md` ou `CLAUDE.md` na raiz do repositório. Quase ninguém mantém esses arquivos em dia. Escrever o que você já sabe é a primeira tarefa que a gente abandona quando aperta.
+
+Enquanto isso, tem um programa rodando na minha máquina que grava tudo. O PiecesOS captura o que passa na tela o dia inteiro e resume em memórias pesquisáveis: as decisões, os bugs, os becos sem saída. Quatro meses de histórico do projeto, escritos sozinhos, parados num banco local.
+
+De um lado, um arquivo que ninguém preenche. Do outro, um banco que se preenche sozinho. A ponte era óbvia demais para não construir: um CLI que lê a memória via MCP e escreve num bloco do arquivo de contexto o que pertence àquele repositório. `npx pieces-to-agents`, aparece um diff, você aprova ou não.
+
+A primeira versão funcionou no primeiro dia. O estrago veio junto.
+
+## O erro cabia numa palavra: "mencionam"
+
+A lógica inicial era razoável no papel: buscar sessões que mencionam o projeto, extrair os resumos, filtrar, escrever. O defeito estava no "mencionam". Eu buscava no conteúdo inteiro da sessão, título e corpo.
+
+Sessões de trabalho reais citam outros assuntos o tempo todo. Uma linha dizendo "abri o projeto X pra comparar" bastava para a sessão inteira entrar como elegível. Foi assim que uma sessão que tinha uma menção de passagem ao repositório do cliente despejou no diff o resto do que aconteceu naquela tarde: a proposta de emprego que eu estava negociando, o código de outra pessoa que eu tinha auditado, a conta que eu tinha ajudado a recuperar.
+
+Nada disso chegou a ser gravado. O diff com aprovação manual existia desde o commit um, e foi ele que segurou. Mas eu fiquei um bom tempo olhando aquela tela. Se eu tivesse colocado uma flag `--yes` por conveniência, como quase toda ferramenta de CLI faz, esse texto estaria num arquivo versionado, provavelmente commitado, possivelmente público.
+
+A ferramenta não tinha feito nada errado pelos próprios critérios. **Os critérios é que eram errados.** Memória pessoal não é um corpus neutro: é a mistura do seu trabalho com a sua vida, e qualquer busca ampla demais traz os dois.
+
+## Tudo que o projeto é hoje nasceu daquele susto
+
+Praticamente toda decisão de design do projeto de lá pra cá descende daquele susto.
+
+A elegibilidade passou a ler só o título da sessão. O Pieces nomeia sessões pelo que você de fato trabalhou, então o título é o sinal mais forte disponível. Menção de passagem no corpo deixou de puxar sessão.
+
+Não bastou. Sessões reais são mistas. Uma se chamava, literalmente, "OwlSQL Refactoring and Job Search". Metade era projeto, metade era procura de emprego, e o título honesto admitia as duas. Então o filtro desceu para o nível do bullet: cada linha precisa tocar o vocabulário do próprio projeto, construído dos nomes de arquivos e pastas, do `package.json` e dos aliases que você passar. Num repositório com quatro meses de histórico, isso levou os bullets fora de tópico de vinte por cento para menos de quatro.
+
+Nomes, empregadores e codinomes de cliente foram para uma deny-list local, e um bullet que menciona um termo negado é removido inteiro, não mascarado, porque a frase em volta de um nome costuma ser sobre aquele nome. Emails, tokens, chaves e telefones são trocados por placeholders automaticamente. E o perfil pessoal que o Pieces mantém sobre você, um resumo hierárquico de quem você é, a ferramenta se recusa a ler.
+
+O diff continua sendo a peça central, e continua sem flag para pular. Essa ausência é a decisão de design de que eu mais tenho certeza.
+
+## A parte que ainda me incomoda
+
+Tem um detalhe mais desconfortável que privacidade, e eu demorei para enxergar.
+
+Tudo que a ferramenta escreve veio de texto que apareceu numa tela. Uma página web, a descrição de um pull request, um documento que te mandaram. Se o PiecesOS viu, o resumo pode citar, e a citação pode parar num arquivo que um agente trata como instrução. Texto escrito para ser obedecido por um agente sobrevive a essa viagem inteiro.
+
+Meus filtros procuram dado privado. Eles não sabem distinguir uma decisão que eu tomei de uma frase que alguém escreveu para ser encontrada. Então o README diz com todas as letras: **leia o diff como se parte dele viesse de um estranho, porque parte dele veio.**
+
+## Hoje o diff aprendeu a apontar
+
+A versão 0.1.18 saiu essa semana. O pipeline é estável: duas estratégias de busca por categoria (a vetorial entende paráfrase mas não vê memória recém-criada, a full-text é o contrário, então rodam as duas), resumos que o Pieces já escreveu em markdown, filtro, redação, diff. A cadeia inteira responde em uns 70 milissegundos; o caminho alternativo da API, que devolve OCR cru de tela, leva mais de 3 segundos e traz exatamente o tipo de material que eu não quero tocar.
+
+A novidade da 0.1.18 ataca o ponto fraco da deny-list: ela só protege contra nomes que você já cadastrou, o que significa que o primeiro vazamento de qualquer nome depende do seu olho no diff. Agora palavras capitalizadas que não pertencem nem ao vocabulário do projeto nem a uma lista de tecnologias conhecidas são destacadas e listadas como possíveis nomes próprios. Nada é removido sozinho. A lista existe para um nome inesperado saltar do diff em vez de se esconder nele. No primeiro teste contra memória real, ela apontou exatamente um termo: o nome de um projeto vizinho, o mesmo que meses atrás eu tive que negar na mão.
+
+Limites que continuam: os filtros de bullet só leem inglês, a heurística de capitalização não pega nome escrito em minúscula, e nada verifica se uma memória é verdadeira. Os resumos são escritos por um modelo, e uma run real já reportou um número de versão com um dígito a mais. O diff também é revisão de fatos, não só de privacidade.
+
+## O contrato desta série
+
+Vou postar o que quebrar, na ordem em que quebrar, incluindo o que quebrar por culpa minha. O changelog do projeto já funciona assim, cada versão documenta o bug real que a motivou, e o blog vai seguir o mesmo padrão com mais contexto e menos pudor.
+
+Se você usa PiecesOS e um agente de código, dá para testar em qualquer repositório git:
+
+```bash
+npx pieces-to-agents
+```
+
+**Leia o diff antes de aprovar. Essa frase é o produto inteiro.**
+
+O código está em [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), MIT, e o README tem uma seção de privacidade que eu reescreveria como post inteiro um dia. Issues e ceticismo são bem-vindos.
+
+E você, deixaria uma ferramenta escrever num arquivo que seu agente lê como instrução? Rode uma vez e me conta o que apareceu no seu diff. Aposto que tem coisa aí que você não gostaria de commitar.
