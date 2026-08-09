@@ -5,6 +5,7 @@ import { LangProvider } from '@/contexts/LangContext';
 import { Nav } from '@/components/Nav';
 import { ScrollProgress } from '@/components/ScrollProgress';
 import { HtmlLang } from '@/components/HtmlLang';
+import { Footer } from '@/components/sections';
 
 const SITE_URL = 'https://tiagolauer.dev';
 const OG_IMAGE = 'https://avatars.githubusercontent.com/u/91141923?v=4';
@@ -82,10 +83,6 @@ const jsonLd = {
     'mailto:tiagoestrelalauer@gmail.com',
   ],
   jobTitle: 'Full-Stack Technical Lead',
-  worksFor: {
-    '@type': 'Organization',
-    name: 'ohubdev',
-  },
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Brusque',
@@ -119,6 +116,7 @@ export default async function LangLayout({
         <ScrollProgress />
         <Nav />
         {children}
+        <Footer />
       </LangProvider>
     </>
   );

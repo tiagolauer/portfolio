@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Reveal } from '@/components/Reveal';
@@ -11,7 +12,6 @@ import type { T } from '@/i18n/strings';
 const EASE = [0.16, 1, 0.3, 1] as const;
 const CONTACT_EMAIL = 'tiagoestrelalauer@gmail.com';
 
-/* ── Hero ── */
 const NAME_WORDS = [
   { text: 'TIAGO',   highlight: false },
   { text: 'ESTRELA', highlight: true  },
@@ -36,8 +36,8 @@ const fadeUp = {
   }),
 };
 
-function Hero() {
-  const { t } = useLang();
+export function Hero() {
+  const { lang, t } = useLang();
 
   return (
     <section id="hero">
@@ -83,8 +83,8 @@ function Hero() {
             <p className="hero-location">{t('h_loc')}</p>
           </div>
           <div className="hero-actions">
-            <a href="#open-source" className="btn btn-fill">{t('h_cta1')}</a>
-            <a href="#contact"  className="hero-cta-secondary">{t('h_cta2')}</a>
+            <Link href={`/${lang}/open-source`} className="btn btn-fill">{t('h_cta1')}</Link>
+            <Link href={`/${lang}/contact`} className="hero-cta-secondary">{t('h_cta2')}</Link>
           </div>
         </motion.div>
 
@@ -105,7 +105,6 @@ function Hero() {
   );
 }
 
-/* ── Animated stat ── */
 interface StatProps {
   rawVal: number;
   suffix: string;
@@ -140,9 +139,20 @@ function AnimatedStat({ rawVal, suffix, label, divideBy = 1, decimals = 0, varia
   );
 }
 
-/* ── About ── */
-function About() {
-  const { t } = useLang();
+const ABOUT_PRINCIPLES = [
+  { title: 'ab_how1t' as const, desc: 'ab_how1d' as const },
+  { title: 'ab_how2t' as const, desc: 'ab_how2d' as const },
+  { title: 'ab_how3t' as const, desc: 'ab_how3d' as const },
+];
+
+const ABOUT_FACTS = [
+  { label: 'ab_f1l' as const, value: 'ab_f1v' as const },
+  { label: 'ab_f2l' as const, value: 'ab_f2v' as const },
+  { label: 'ab_f3l' as const, value: 'ab_f3v' as const },
+];
+
+export function About() {
+  const { lang, t } = useLang();
   return (
     <section id="about">
       <div className="wrap">
@@ -164,19 +174,38 @@ function About() {
           </Reveal>
           <Reveal delay={160}>
             <div className="about-stats">
-              <AnimatedStat rawVal={6}    suffix="+"   label={t('st_yrs')} />
-              <AnimatedStat rawVal={995}  suffix="%" divideBy={10} decimals={1} label={t('st_up')}  />
-              <AnimatedStat rawVal={10}   suffix="K+"  label={t('st_usr')} />
-              <AnimatedStat rawVal={5}    suffix=""    label={t('st_co')}  />
+              <AnimatedStat rawVal={6} suffix="+" label={t('st_yrs')} />
+              <AnimatedStat rawVal={5} suffix=""  label={t('st_co')} />
             </div>
           </Reveal>
         </div>
+
+        <Reveal className="about-extra">
+          <p>{t('about_p2')}</p>
+          <p>{t('about_p3')}</p>
+        </Reveal>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('ab_facts')}</h2>
+        </Reveal>
+        <div>
+          {ABOUT_FACTS.map(({ label, value }, i) => (
+            <Reveal key={label} delay={i * 55} className="skill-row">
+              <span className="skill-cat">{t(label)}</span>
+              <span className="skill-items">{t(value)}</span>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal className="about-cta">
+          <Link href={`/${lang}/experience`} className="btn btn-fill">{t('ab_cta_exp')}</Link>
+          <Link href={`/${lang}/contact`} className="hero-cta-secondary">{t('ab_cta_contact')}</Link>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/* ── Skills ── */
 const SKILLS = [
   { key: 'sk_mob' as const, items: 'React Native · Expo · Redux Toolkit · Zustand · React Navigation · Firebase · EAS Build' },
   { key: 'sk_fe'  as const, items: 'Vue.js 3 · Angular · TypeScript · TailwindCSS · Vuetify · JavaScript ES6+' },
@@ -185,7 +214,7 @@ const SKILLS = [
   { key: 'sk_tl'  as const, items: 'Git · Figma · Sentry · Postman · Web Workers · HTML Canvas · Agile / Scrum' },
 ];
 
-function Skills() {
+export function Skills() {
   const { t } = useLang();
   return (
     <section id="skills">
@@ -201,12 +230,31 @@ function Skills() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('ab_how')}</h2>
+        </Reveal>
+        <div>
+          {ABOUT_PRINCIPLES.map(({ title, desc }, i) => (
+            <Reveal key={title} delay={i * 55} className="skill-row">
+              <span className="skill-cat">{t(title)}</span>
+              <span className="skill-items">{t(desc)}</span>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal className="section-head about-subhead">
+          <h2 className="section-title">{t('sk_results')}</h2>
+        </Reveal>
+        <Reveal className="about-stats skills-stats">
+          <AnimatedStat rawVal={995} suffix="%" divideBy={10} decimals={1} label={t('st_up')} />
+          <AnimatedStat rawVal={10}  suffix="K+" label={t('st_usr')} />
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/* ── Experience ── */
 const JOBS = [
   {
     company: 'ohubdev',
@@ -244,13 +292,21 @@ const JOBS = [
     company: 'Bravuserp Sistemas',
     roleKey: 'r_brav' as const,
     period: ['Feb 2022', 'Aug 2023'],
-    loc: 'Brusque, Brazil',
+    loc: 'Balneário Camboriú, Brazil',
     highlights: ['brav1', 'brav2'] as const,
     stack: ['Angular', 'JavaScript', 'HTML5', 'CSS3'],
   },
+  {
+    company: 'Freelance',
+    roleKey: 'r_free' as const,
+    period: ['Jan 2019', 'Feb 2022'],
+    loc: 'Balneário Camboriú, Brazil · Remote',
+    highlights: ['free1', 'free2', 'free3'] as const,
+    stack: ['React Native', 'Redux', 'TypeScript', 'JavaScript', 'Firebase', 'Node.js'],
+  },
 ] as const;
 
-function Experience() {
+export function Experience() {
   const { t } = useLang();
   return (
     <section id="experience">
@@ -286,7 +342,6 @@ function Experience() {
   );
 }
 
-/* ── Project card with hover lift ── */
 interface ProjCardProps {
   href: string;
   label: string;
@@ -324,9 +379,12 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
   );
 }
 
-/* ── Open Source ── */
 const GITHUB_USER = 'tiagolauer';
-const MAX_REPOS = 6;
+const FEATURED_REPOS = ['pieces-to-agents', 'owlsql'];
+const NPM_PACKAGES: Record<string, string> = {
+  'pieces-to-agents': 'pieces-to-agents',
+  owlsql: '@owlsql/core',
+};
 const REPO_DESC_OVERRIDES: Partial<Record<string, keyof typeof T.en>> = {
   OwlSQL: 'p_sql_desc',
 };
@@ -341,18 +399,32 @@ interface GithubRepo {
   fork: boolean;
 }
 
-function isFeaturable(repo: GithubRepo) {
-  return (
-    !repo.fork &&
-    repo.name.toLowerCase() !== GITHUB_USER &&
-    Boolean(REPO_DESC_OVERRIDES[repo.name] || repo.description)
-  );
+function featuredRank(repo: GithubRepo) {
+  return FEATURED_REPOS.indexOf(repo.name.toLowerCase());
 }
 
-function OpenSource() {
-  const { t } = useLang();
+export function OpenSource() {
+  const { lang, t } = useLang();
   const [repos, setRepos] = useState<GithubRepo[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(
+      Object.entries(NPM_PACKAGES).map(([repo, pkg]) =>
+        fetch(`https://api.npmjs.org/downloads/point/last-week/${pkg}`)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data: { downloads?: number } | null) =>
+            data?.downloads ? ([repo, data.downloads] as const) : null
+          )
+          .catch(() => null)
+      )
+    ).then((entries) => {
+      if (!cancelled) setDownloads(Object.fromEntries(entries.filter(Boolean) as (readonly [string, number])[]));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -362,9 +434,8 @@ function OpenSource() {
         if (cancelled) return;
         setRepos(
           data
-            .filter(isFeaturable)
-            .sort((a, b) => b.stargazers_count - a.stargazers_count)
-            .slice(0, MAX_REPOS)
+            .filter((repo) => featuredRank(repo) >= 0)
+            .sort((a, b) => featuredRank(a) - featuredRank(b))
         );
       })
       .catch(() => { if (!cancelled) setFailed(true); });
@@ -383,6 +454,10 @@ function OpenSource() {
           <div className="proj-grid">
             {repos.map((repo, i) => {
               const override = REPO_DESC_OVERRIDES[repo.name];
+              const weekly = downloads[repo.name.toLowerCase()];
+              const stats = weekly
+                ? `★ ${repo.stargazers_count} · ${weekly.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')} ${t('p_npm')}`
+                : `★ ${repo.stargazers_count}`;
               return (
                 <ProjCard
                   key={repo.id}
@@ -390,7 +465,7 @@ function OpenSource() {
                   label={repo.language ?? 'Code'}
                   name={repo.name}
                   desc={override ? t(override) : (repo.description ?? t('os_no_desc'))}
-                  lang={`★ ${repo.stargazers_count}`}
+                  lang={stats}
                   linkText={t('p_github')}
                   delay={i * 80}
                 />
@@ -403,8 +478,7 @@ function OpenSource() {
   );
 }
 
-/* ── Contact ── */
-function Contact() {
+export function Contact() {
   const { t } = useLang();
   return (
     <section id="contact">
@@ -453,25 +527,16 @@ function Contact() {
   );
 }
 
-/* ── Page ── */
-export function Portfolio() {
+export function Footer() {
   const { t } = useLang();
   return (
-    <main>
-      <Hero />
-      <About />
-      <Skills />
-      <Experience />
-      <OpenSource />
-      <Contact />
-      <footer>
-        <div className="wrap">
-          <div className="footer-inner">
-            <span className="footer-text">{t('ft_copy')}</span>
-            <span className="footer-text">Brusque, Brazil</span>
-          </div>
+    <footer>
+      <div className="wrap">
+        <div className="footer-inner">
+          <span className="footer-text">{t('ft_copy')}</span>
+          <span className="footer-text">Brusque, Brazil</span>
         </div>
-      </footer>
-    </main>
+      </div>
+    </footer>
   );
 }

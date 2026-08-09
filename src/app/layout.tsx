@@ -32,7 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={`${unbounded.variable} ${figtree.variable}`}>
       <body>
-        <MotionConfig reducedMotion="user">{children}</MotionConfig>
+        <MotionConfig reducedMotion="user">
+          {children}
+        </MotionConfig>
       </body>
     </html>
   );

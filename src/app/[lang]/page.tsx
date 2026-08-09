@@ -1,5 +1,9 @@
-import { Portfolio } from '@/components/Portfolio';
+import { Hero } from '@/components/sections';
 
-export default function Page() {
-  return <Portfolio />;
+export default function HomePage() {
+  return (
+    <main>
+      <Hero />
+    </main>
+  );
 }

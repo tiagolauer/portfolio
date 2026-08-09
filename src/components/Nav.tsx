@@ -3,53 +3,60 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { T, type Lang } from '@/i18n/strings';
+import { useLang } from '@/contexts/LangContext';
+import type { Lang } from '@/i18n/strings';
 
-const LANG_SEGMENT = /^\/(en|pt)(?=\/|$)/;
-const SCROLL_THRESHOLD = 32;
+const NAV_LINKS = [
+  { slug: 'about',       key: 'n_about'  },
+  { slug: 'skills',      key: 'n_skills' },
+  { slug: 'experience',  key: 'n_exp'    },
+  { slug: 'open-source', key: 'n_os'     },
+  { slug: 'blog',        key: 'n_blog'   },
+] as const;
 
-const SECTIONS = ['n_about', 'n_skills', 'n_exp', 'n_os'] as const;
-const SECTION_IDS: Record<(typeof SECTIONS)[number], string> = {
-  n_about: 'about',
-  n_skills: 'skills',
-  n_exp: 'experience',
-  n_os: 'open-source',
-};
+function isActive(pathname: string, base: string): boolean {
+  return pathname === base || pathname.startsWith(`${base}/`);
+}
 
 export function Nav() {
-  const pathname = usePathname();
+  const { lang, setLang, t } = useLang();
   const router = useRouter();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-
-  const lang: Lang = pathname.startsWith('/pt') ? 'pt' : 'en';
-  const t = (key: keyof typeof T.en) => T[lang][key];
-  const home = `/${lang}`;
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
+    const handler = () => setScrolled(window.scrollY > 32);
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   const switchLang = (next: Lang) => {
-    router.push(
-      LANG_SEGMENT.test(pathname) ? pathname.replace(LANG_SEGMENT, `/${next}`) : `/${next}`
-    );
+    setLang(next);
+    router.replace(pathname.replace(/^\/(en|pt)(?=\/|$)/, `/${next}`));
   };
 
   return (
-    <nav id="nav" className={scrolled ? 'scrolled' : ''}>
+    <nav id="nav" className={`${scrolled ? 'scrolled' : ''}${open ? ' menu-open' : ''}`}>
       <div className="wrap">
         <div className="nav-inner">
-          <Link href={home} className="nav-logo">TL</Link>
+          <Link href={`/${lang}`} className="nav-logo">TL</Link>
 
           <ul className="nav-links">
-            {SECTIONS.map((key) => (
-              <li key={key}>
-                <a href={`${home}#${SECTION_IDS[key]}`}>{t(key)}</a>
+            {NAV_LINKS.map(({ slug, key }) => (
+              <li key={slug}>
+                <Link
+                  href={`/${lang}/${slug}`}
+                  className={isActive(pathname, `/${lang}/${slug}`) ? 'active' : undefined}
+                >
+                  {t(key)}
+                </Link>
               </li>
             ))}
-            <li><Link href={`${home}/blog`}>{t('n_blog')}</Link></li>
           </ul>
 
           <div className="nav-right">
@@ -67,10 +74,38 @@ export function Nav() {
                 aria-pressed={lang === 'pt'}
               >PT</button>
             </div>
-            <a href={`${home}#contact`} className="nav-cta">{t('n_contact')}</a>
+            <Link href={`/${lang}/contact`} className="nav-cta">{t('n_contact')}</Link>
+            <button
+              className={`nav-burger${open ? ' open' : ''}`}
+              onClick={() => setOpen(!open)}
+              aria-label={lang === 'pt' ? (open ? 'Fechar menu' : 'Abrir menu') : (open ? 'Close menu' : 'Open menu')}
+              aria-expanded={open}
+            >
+              <span />
+              <span />
+            </button>
           </div>
         </div>
       </div>
+      {open && (
+        <div className="nav-mobile">
+          {NAV_LINKS.map(({ slug, key }) => (
+            <Link
+              key={slug}
+              href={`/${lang}/${slug}`}
+              className={isActive(pathname, `/${lang}/${slug}`) ? 'active' : undefined}
+            >
+              {t(key)}
+            </Link>
+          ))}
+          <Link
+            href={`/${lang}/contact`}
+            className={pathname === `/${lang}/contact` ? 'active' : undefined}
+          >
+            {t('n_contact')}
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }
