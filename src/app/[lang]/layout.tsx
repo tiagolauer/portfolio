@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { LANGS, isLang, type Lang } from '@/i18n/strings';
+import { LANGS, isLang } from '@/i18n/strings';
 import { LangProvider } from '@/contexts/LangContext';
 import { Nav } from '@/components/Nav';
 import { ScrollProgress } from '@/components/ScrollProgress';
