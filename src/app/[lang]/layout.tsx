@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import type { Lang } from '@/i18n/strings';
+import { notFound } from 'next/navigation';
+import { LANGS, isLang, type Lang } from '@/i18n/strings';
 import { LangProvider } from '@/contexts/LangContext';
 import { Nav } from '@/components/Nav';
 import { ScrollProgress } from '@/components/ScrollProgress';
@@ -10,7 +11,7 @@ const SITE_URL = 'https://tiagolauer.dev';
 const OG_IMAGE = 'https://avatars.githubusercontent.com/u/91141923?v=4';
 
 export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'pt' }];
+  return LANGS.map((lang) => ({ lang }));
 }
 
 export async function generateMetadata({
@@ -102,6 +103,7 @@ export default async function LangLayout({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
+  if (!isLang(lang)) notFound();
 
   return (
     <>
@@ -110,7 +112,7 @@ export default async function LangLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <LangProvider initialLang={lang as Lang}>
+      <LangProvider initialLang={lang}>
         <ScrollProgress />
         <Nav />
         {children}

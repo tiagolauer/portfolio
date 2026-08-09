@@ -1,0 +1,62 @@
+export const meta = {
+  title: 'Capitalization is my NER model',
+  description: 'The deny-list only knows the names you already registered. 0.1.18 attacks the first leak — and the part I want to defend is the decision to use no model at all. Field notes from pieces-to-agents, entry 5.',
+  date: '2026-08-09',
+  tags: ['Privacy', 'Coding agents', 'Open Source'],
+};
+
+*Field notes from pieces-to-agents, entry 5*
+
+There is one kind of leak no previous version could prevent: the first one.
+
+The deny-list came out of the [entry 4](/en/blog/the-promise-my-tool-printed-was-false) audit working as promised. A registered term dies on every path, new or kept. But it carries a birth defect no fix removes: **it only knows the names you already registered.** The client who signed yesterday is not on the list. The person who joined the team on Tuesday is not either. The first leak of every new name depends entirely on your eye on the diff. In a forty-bullet diff, a tired eye approves anything.
+
+0.1.18, this week's release, attacks exactly that. And the part I want to defend is the decision to use no model at all.
+
+## The 100-megabyte model I did not install
+
+Recognizing proper names in text is a solved problem. It is called NER, named entity recognition, and there are good local models for it. The respectable path would be embedding a BERT via transformers.js and tagging person, organization and place with real probabilities.
+
+The respectable path downloads about 100 megabytes on first run. The invitation on the README's cover is "run `npx pieces-to-agents`, there is nothing to install first". A command that starts by downloading a model before it shows you a diff breaks that sentence, and that sentence is half the reason anyone tries the tool.
+
+Then I looked at the problem again and realized the real requirement was different. I do not need an accurate classifier, because nothing gets removed automatically. I need an unexpected name to jump out of the diff instead of hiding in it. The cost of being wrong is asymmetric: **a false positive costs one glance; a false negative leaves you exactly where you already were.** For that math, a cheap heuristic pays the same debt as the model, without charging 100 megabytes at the door.
+
+And the heuristic was staring at me. Pieces summaries arrive in English, which was already a documented limit. In English, proper names come capitalized.
+
+## Grammar collects its second installment
+
+A capitalized word in the middle of a sentence, belonging neither to the project vocabulary nor to a list of known technologies, becomes a suspect. That is it. The rest is polish.
+
+Sentence starts do not count, or every bullet would accuse its own first word. And here the series pays for itself: the verb-tense filter from [entry 2](/en/blog/one-in-five-bullets-belonged-to-another-project) guarantees every bullet opens with a past-tense verb, so discarding the first word discards no name at all, it discards "Fixed" and "Chose". A decision made for privacy accidentally became the foundation of another.
+
+All-caps acronyms pass, JWT and API are nobody's secret. Days, months, platforms and assistant names live in a stop list. And consecutive suspect words are grouped: "Marcos Silva" arrives as a single candidate, ready to paste into the deny-list, not as two pieces of a mystery.
+
+Detection runs only on the lines the current run is adding. What was already in the file passed your eye when it entered; highlighting it again on every execution would train you to ignore the highlight.
+
+In the diff, candidates show up in yellow. Below, one line lists them all with the deny-list path next to it. Nothing is removed, there is no new flag, and when there is no candidate the tool stays quiet. A good safety feature is one that disappears when it has nothing to say.
+
+## The first test pointed at the usual suspect
+
+I ran it against my real memory. Three candidates: OwlSQL, YouTube and Code.
+
+Two were noise with a clear cause. "Code" came from "Claude Code" split in half by the stop list, which knew "Claude" and not the second half. "YouTube" is a brand that threatens no one. Both went into the known-terms list, and the second round returned exactly one candidate: OwlSQL.
+
+Anyone following the series recognizes it. OwlSQL is the neighboring project from [entry 2](/en/blog/one-in-five-bullets-belonged-to-another-project), the one that shares work sessions with mine and survived every filter until I registered it in the deny-list by hand. The new feature, on its first honest test, pointed precisely at the name that months ago cost me a whole investigation to find. That does not prove the heuristic is good. It proves it finds the kind of thing that already slipped past me once, and that was the requirement.
+
+## What it does not see, said out loud
+
+A lowercase name walks right through. An all-caps codename looks like an acronym and walks through too. A name inside a session title is not scanned, detection reads only the bullets. And none of it works if the summaries ever arrive in another language, because the entire premise is English capitalization convention.
+
+It is all written in the README, in the limits section, with the conclusion that covers them all: the hints narrow the gap the deny-list leaves, they do not close it. **The diff is still the control that matters.** If the heuristic proves too blind in practice, the real model comes in as an optional upgrade behind a flag, for whoever accepts the download. It is on the roadmap, without a promise.
+
+## The series caught up with the present
+
+Five entries, and the log has touched the published version: 0.1.18 on npm is exactly what is described here. From here on the format changes from archaeology to real time: next entry when something breaks or something new leaves the oven. The most likely candidate is a watch mode or a commit hook, so syncing stops depending on me remembering it.
+
+Code at [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), and trying it still costs one command:
+
+```bash
+npx pieces-to-agents
+```
+
+So: how much of your security pipeline exists to compensate for the fact that nobody reads anything carefully? Mine, all of it. I would rather admit it and design for the tired eye than pretend infinite attention exists.

@@ -1,0 +1,64 @@
+export const meta = {
+  title: 'Um em cada cinco bullets era de outro projeto',
+  description: 'Filtrar pela sessão não resolve, porque a sessão é o tamanho errado. Diário de bordo do pieces-to-agents, entrada 2.',
+  date: '2026-08-04',
+  tags: ['Privacidade', 'Agentes de código', 'Open Source'],
+};
+
+*Diário de bordo do pieces-to-agents, entrada 2*
+
+Tinha uma sessão no meu histórico chamada "OwlSQL Refactoring and Job Search". O título é de uma honestidade constrangedora: naquela tarde eu refatorei um projeto e procurei emprego, nessa ordem, na mesma janela. O Pieces registrou as duas coisas juntas porque elas aconteceram juntas.
+
+No [post anterior](/pt/blog/my-tool-leaked-a-salary-negotiation) eu contei como a primeira versão da ferramenta quase escreveu uma negociação salarial num repositório de cliente, e como o conserto foi passar a filtrar pelo título da sessão. Esse post é sobre a descoberta seguinte: **filtrar pela sessão não resolve, porque a sessão é o tamanho errado.**
+
+Sessões reais são mistas. A minha vida não abre uma sessão nova quando eu mudo de assunto.
+
+## Medi, e o número era pior do que eu esperava
+
+Rodei a ferramenta num repositório com quatro meses de histórico e li a saída linha por linha. De cada cinco bullets que passavam pelo filtro de sessão, um era de outra coisa: vagas de emprego, um projeto vizinho que nem é meu, suporte de hospedagem para domínios de clientes que não têm nada a ver com o repositório, e gameplay. Videogame, no meio do arquivo de contexto de um projeto de banco de dados.
+
+Nenhum desses bullets era mentira. Todos aconteceram. Só não aconteceram *ali*.
+
+O conserto foi descer o filtro um nível: parar de perguntar "essa sessão é do projeto?" e passar a perguntar "**essa linha** é do projeto?". Cada bullet agora precisa tocar o vocabulário do próprio repositório, que a ferramenta monta sozinha com os nomes de arquivos e pastas, o `package.json` e os aliases que você passar. Bullet que o Pieces marcou com uma pessoa identificada é descartado sem apelação, diga o que disser.
+
+No mesmo repositório, os onze bullets fora de tópico viraram dois. Os dois sobreviventes citavam o projeto vizinho, que divide sessões de trabalho com o meu. Uma linha na deny-list e zeraram.
+
+## Todo caminho até o arquivo é um caminho de vazamento
+
+Aí eu cometi o erro clássico: achei que tinha terminado. As versões seguintes foram uma aula de humildade, cada uma num caminho que eu não tinha vigiado.
+
+A deny-list mascarava o termo em vez de remover a linha, porque a redação rodava antes do filtro. Sobrou um bullet sobre o arquivo de licença que dizia, literalmente, "[redacted] Lauer". Meu sobrenome, com o resto escondido. Mascarar um nome no meio da frase não protege nada: **a frase em volta de um nome costuma ser sobre aquele nome.** Hoje o termo negado derruba o bullet inteiro.
+
+O título da sessão ia direto pro arquivo sem passar por redação nenhuma. Uma run produziu o cabeçalho "OwlSQL Auditing and Hostinger Troubleshooting" com Hostinger já cadastrada na deny-list. Todos os bullets embaixo estavam limpos; o vazamento estava na moldura. Título agora passa pelo mesmo funil.
+
+Uma run vazou o nome de um terceiro ao lado de um telefone internacional. Caminhos absolutos expunham a estrutura de pastas da minha máquina, nomes de clientes inclusos. Cada um desses casos virou padrão de redação novo, e cada um tinha passado ileso por tudo que existia antes.
+
+A regra que sobrou dessa fase é chata e absoluta: se um texto tem como chegar ao arquivo, ele passa pelos mesmos filtros que todo o resto. A moldura recebe o mesmo tratamento do quadro.
+
+## A gramática virou filtro de privacidade
+
+A parte que eu mais gosto dessa fase não é um filtro de segurança. É uma observação sobre linguagem.
+
+Depois de limpar o que era de outro projeto, ainda sobrava ruído: listas de páginas visitadas, caminhos de arquivo soltos, e principalmente intenções. "Resolver o bug do parser amanhã" é o tipo de linha que envelhece horrível num arquivo de contexto. Um agente lê aquilo meses depois como tarefa aberta e sai tentando resolver um bug que já morreu.
+
+A saída estava no tempo verbal. **Memória fala no passado.** O que aconteceu vira "corrigi", "descobri". Tarefa pendente fala no imperativo, "resolver o bug", "atualizar a doc", e referência nem verbo tem. Então o filtro passou a exigir que o bullet abra com verbo no passado. O imperativo cai: intenção de ontem não é memória, é tarefa velha fingindo urgência. Frase sem verbo cai junto, já que uma lista de páginas visitadas não carrega decisão nenhuma.
+
+É um filtro que caberia num tweet, e segurou mais ruído que qualquer heurística sofisticada que eu tentei antes. A gramática já tinha resolvido o problema; eu só precisava parar de ignorar o que ela dizia.
+
+## O número honesto no final
+
+Contas fechadas dessa fase: os bullets fora de tópico caíram de vinte por cento para menos de quatro. Os que restaram eram do projeto vizinho, e saíram com uma linha de deny-list, não com filtro novo.
+
+Menos de quatro não é zero, e eu não prometo zero. O que os filtros compram é outra coisa: **um diff curto o bastante para ser lido de verdade.** Vinte por cento de ruído em quarenta bullets é um diff que você passa correndo o olho e aprova cansado. Quatro por cento é um diff onde uma linha estranha salta.
+
+O filtro não substitui a leitura. Ele torna a leitura possível.
+
+Na próxima entrada o assunto muda de camada: o que aprendi implementando o cliente MCP na mão, incluindo um servidor que respondia certo de um jeito que meu parser insistia em chamar de erro.
+
+O código continua em [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), e o teste continua sendo um comando:
+
+```bash
+npx pieces-to-agents
+```
+
+E você, que porcentagem do seu histórico de trabalho apostaria que é só trabalho? Eu apostava alto antes de medir. Perdi.

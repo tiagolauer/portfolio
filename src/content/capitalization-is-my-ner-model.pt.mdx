@@ -1,0 +1,62 @@
+export const meta = {
+  title: 'Maiúscula é o meu modelo de NER',
+  description: 'A deny-list só conhece os nomes que você já cadastrou. A 0.1.18 ataca o primeiro vazamento — e a parte que eu quero defender é a decisão de não usar modelo nenhum. Diário de bordo do pieces-to-agents, entrada 5.',
+  date: '2026-08-09',
+  tags: ['Privacidade', 'Agentes de código', 'Open Source'],
+};
+
+*Diário de bordo do pieces-to-agents, entrada 5*
+
+Tem um tipo de vazamento que nenhuma versão anterior conseguia impedir: o primeiro.
+
+A deny-list saiu da auditoria da [entrada 4](/pt/blog/the-promise-my-tool-printed-was-false) funcionando como promete. Termo cadastrado morre em todo caminho, novo ou mantido. Mas ela carrega um defeito de nascença que conserto nenhum remove: **ela só conhece os nomes que você já cadastrou.** O cliente que fechou contrato ontem não está na lista. A pessoa que entrou no time na terça também não. O primeiro vazamento de cada nome novo depende inteiramente do seu olho no diff. Num diff de quarenta bullets, olho cansado aprova qualquer coisa.
+
+A 0.1.18, versão desta semana, ataca exatamente isso. E a parte que eu quero defender é a decisão de não usar modelo nenhum.
+
+## O modelo de 100 megas que eu não instalei
+
+Reconhecer nomes próprios em texto é problema resolvido. Chama NER, named entity recognition, e existe modelo local bom para isso. O caminho respeitável seria embutir um BERT via transformers.js e marcar pessoa, organização e lugar com probabilidade de verdade.
+
+O caminho respeitável baixa uns 100 megabytes na primeira execução. O convite na capa do README é "rode `npx pieces-to-agents`, não tem nada para instalar antes". Um comando que começa baixando um modelo para só depois mostrar um diff quebra essa frase, e essa frase é metade da razão de alguém experimentar a ferramenta.
+
+Aí olhei o problema de novo e percebi que o requisito real era outro. Eu não preciso de um classificador certeiro, porque nada vai ser removido automaticamente. Preciso que um nome inesperado salte do diff em vez de se esconder nele. O custo de errar é assimétrico: **falso positivo custa um olhar; falso negativo deixa você exatamente onde já estava.** Para essa conta, uma heurística barata paga a mesma dívida que o modelo, sem cobrar os 100 megas na entrada.
+
+E a heurística estava na cara. Os resumos do Pieces chegam em inglês, isso já era um limite documentado. Em inglês, nome próprio vem de maiúscula.
+
+## A gramática cobra a segunda parcela
+
+Palavra com maiúscula no meio da frase, que não pertence ao vocabulário do projeto nem a uma lista de tecnologias conhecidas, vira suspeita. É isso. O resto é lapidação.
+
+Início de frase não conta, senão todo bullet acusaria a própria primeira palavra. E aqui a série se paga: o filtro de tempo verbal da [entrada 2](/pt/blog/one-in-five-bullets-belonged-to-another-project) garante que todo bullet abre com verbo no passado, então descartar a primeira palavra não descarta nome nenhum, descarta "Fixed" e "Chose". Uma decisão tomada por privacidade virou, sem querer, a fundação de outra.
+
+Sigla toda em maiúscula passa, JWT e API não são segredo de ninguém. Dias, meses, plataformas e nomes de assistentes moram numa stop list. E palavras suspeitas consecutivas se agrupam: "Marcos Silva" chega como um candidato só, pronto para colar na deny-list, não como dois pedaços de mistério.
+
+A detecção roda só nas linhas que a run está adicionando. O que já estava no arquivo passou pelo seu olho quando entrou; realçar de novo a cada execução seria treinar você a ignorar o realce.
+
+No diff, os candidatos aparecem em amarelo. Embaixo, uma linha lista todos com o caminho da deny-list do lado. Nada é removido, flag nova não existe, e quando não há candidato a ferramenta fica quieta. Feature de segurança boa é a que some quando não tem nada a dizer.
+
+## O primeiro teste apontou o culpado de sempre
+
+Rodei contra a minha memória real. Três candidatos: OwlSQL, YouTube e Code.
+
+Dois eram ruído com causa clara. "Code" vinha de "Claude Code" partido ao meio pela stop list, que conhecia "Claude" e não conhecia a segunda metade. "YouTube" é marca que não ameaça ninguém. Os dois entraram na lista de termos conhecidos, e a segunda rodada devolveu um candidato exato: OwlSQL.
+
+Quem acompanha a série reconhece. OwlSQL é o projeto vizinho da [entrada 2](/pt/blog/one-in-five-bullets-belonged-to-another-project), o que divide sessões de trabalho com o meu e sobreviveu a todos os filtros até eu o cadastrar na deny-list à mão. A feature nova, no primeiro teste honesto, apontou precisamente o nome que meses atrás me custou uma investigação inteira para achar. Não prova que a heurística é boa. Prova que ela acha o tipo de coisa que já me escapou uma vez, e esse era o requisito.
+
+## O que ela não vê, dito em voz alta
+
+Nome escrito em minúscula passa reto. Codinome todo em maiúscula parece sigla e passa também. Nome dentro de título de sessão não é escaneado, a detecção lê só os bullets. E nada disso funciona se algum dia os resumos vierem em outra língua, porque a premissa inteira é a convenção de maiúscula do inglês.
+
+Está tudo escrito no README, na seção de limites, com a conclusão que vale por todas: as dicas estreitam a brecha que a deny-list deixa, não a fecham. **O diff continua sendo o controle que importa.** Se a heurística se provar cega demais na prática, o modelo de verdade entra como upgrade opcional atrás de uma flag, para quem topar o download. Está no roadmap, sem promessa.
+
+## A série alcançou o presente
+
+Cinco entradas, e o diário encostou na versão publicada: a 0.1.18 no npm é exatamente o que está descrito aqui. Daqui em diante o formato muda de arqueologia para tempo real: próxima entrada quando algo quebrar ou algo novo sair do forno. O candidato mais provável é um modo watch ou um hook de commit, para a sincronização parar de depender de eu lembrar dela.
+
+Código em [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), e o teste segue custando um comando:
+
+```bash
+npx pieces-to-agents
+```
+
+E você, quanto do seu pipeline de segurança existe para compensar o fato de que ninguém lê nada com atenção? O meu inteiro. Prefiro admitir e desenhar para o olho cansado do que fingir que a atenção infinita existe.

@@ -11,7 +11,12 @@ const NAV_LINKS = [
   { slug: 'skills',      key: 'n_skills' },
   { slug: 'experience',  key: 'n_exp'    },
   { slug: 'open-source', key: 'n_os'     },
+  { slug: 'blog',        key: 'n_blog'   },
 ] as const;
+
+function isActive(pathname: string, base: string): boolean {
+  return pathname === base || pathname.startsWith(`${base}/`);
+}
 
 export function Nav() {
   const { lang, setLang, t } = useLang();
@@ -46,7 +51,7 @@ export function Nav() {
               <li key={slug}>
                 <Link
                   href={`/${lang}/${slug}`}
-                  className={pathname === `/${lang}/${slug}` ? 'active' : undefined}
+                  className={isActive(pathname, `/${lang}/${slug}`) ? 'active' : undefined}
                 >
                   {t(key)}
                 </Link>
@@ -88,7 +93,7 @@ export function Nav() {
             <Link
               key={slug}
               href={`/${lang}/${slug}`}
-              className={pathname === `/${lang}/${slug}` ? 'active' : undefined}
+              className={isActive(pathname, `/${lang}/${slug}`) ? 'active' : undefined}
             >
               {t(key)}
             </Link>

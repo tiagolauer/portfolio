@@ -1,0 +1,64 @@
+export const meta = {
+  title: 'The promise my tool printed was false',
+  description: 'I audited my own tool pretending the code belonged to a stranger. Thirteen defects came out, including a leak in the very feature that existed to prevent leaks. Field notes from pieces-to-agents, entry 4.',
+  date: '2026-08-07',
+  tags: ['Privacy', 'Coding agents', 'Open Source'],
+};
+
+*Field notes from pieces-to-agents, entry 4*
+
+Every run of pieces-to-agents prints one line before the confirmation prompt: "Add terms to `.pieces-to-agents-ignore` to redact them permanently". Redact permanently. It is written there, on every execution, since early in the project's life.
+
+For a few versions, "permanently" was a lie. And I only found out because I decided to audit my own tool pretending the code belonged to a stranger. Thirteen defects came out in one sitting. This post is about the best ones, starting with the one that hurt most.
+
+## The leak was born from a fix
+
+To understand the hole, I have to tell the previous version's story. 0.1.16 fixed a real defect: every run replaced the entire managed block instead of appending. You came back after two weeks with the default `--days` and the decisions recorded a month earlier had evaporated, with only the diff as warning. A context file that forgets is a notebook that erases itself. The fix: entries the current search no longer returns are kept, and an old one only leaves when four newer ones push it out.
+
+Right fix. I would do it again. Except the kept entries were copied verbatim from the previous version of the file, and their path never went through the deny-list.
+
+The scenario that creates is exactly the worst one: a name leaks in one run, you notice, you add the name to the deny-list, you run again trusting the promise printed on the screen. The next run filters the name from everything new and **keeps the old entry intact, which is precisely the one that leaked.** The denied term stayed in the file forever, protected by the feature that existed to protect you.
+
+Today a kept bullet that mentions a denied term is dropped, a kept header goes through redaction, and a kept entry left with no clean bullet disappears whole. But the lesson that stays is not about deny-lists: **every new feature is new surface.** The leak was not in new code or in old code. It was in the seam between two correct fixes.
+
+## The filter poisoned by the tool's own files
+
+My favorite defect of the audit, for the irony. The vocabulary that anchors bullets is built from the names of the files at the repository root. And what exists at the root of any repository that has ever used this tool? `AGENTS.md`. Sometimes `CLAUDE.md`.
+
+In other words: the tool wrote the files that poisoned its own filter. "claude" and "agents" became valid anchors, and since every memory comes from a session with a coding assistant, nearly any bullet mentioning Claude passed as project work. Installing the desktop app passed. Connecting the assistant to a task board passed. The filter whose job is to keep out what is not project work treated the assistant's name as project subject matter.
+
+Assistant names and the framework vocabulary every project shares, "model", "route", "component", "hook" and company, became generic terms that anchor nothing. With the right exception: a project actually named "agents" keeps its own name, because `--project` and `--alias` enter whole, overriding the generic list.
+
+In the same family, two more vocabulary holes. The ignored-folders list only applied at the root, so a first-level directory contributed children like `dist` and `coverage` as anchors, and a bullet from another project saying "dist" got in. And a BOM at the start of the target repository's `package.json` made `JSON.parse` blow up inside an empty catch, silently discarding the package name and every dependency from the vocabulary. That same BOM bug I had already fixed in 0.1.2, in the tool's own `package.json`. **Bugs do not die. Bugs change clothes and come back.**
+
+## "marco" matched "Marconi Radio"
+
+Project matching was defective in both directions, which is a polite way of saying it was completely wrong.
+
+Too wide: the fallback that compares names without separators searched by substring, so a project called `marco` matched a session titled "Marconi Radio". The letters are in there, the rest is detail. Now the joined form has to equal a contiguous sequence of whole tokens from the title.
+
+Too narrow: a vocabulary term with a separator matched nothing, ever. A project called `to-do` was left with no functional anchor at all, because "to" and "do" fall under the length floor and "to-do" whole never equaled any single token. Multi-word terms now match as token sequences.
+
+Two opposite defects in the same comparator, both invisible until someone trips. A safety filter wrong in both directions is worse than absent: wide leaks, narrow silences, and both look like they are working.
+
+## The small lies
+
+The rest of the list is small, and small is what erodes trust.
+
+The prompt offered to "write N memories" counting new plus kept, sounding as if N were all news; the final message said a different number. Ctrl+C at the confirmation prompt froze the process instead of cancelling, a raw-mode terminal detail that swallowed the signal. Cancelling had gone back to printing in red as if declining a diff were failure, when declining the diff is the tool working. The temporary write file used a fixed name, so two simultaneous runs trampled each other and one failure left garbage behind forever.
+
+None of these brings anything down alone. Together, they form a tool that says one thing and does another in several small places. That is what an audit is for: not finding the spectacular bug, but aligning every sentence the program prints with what it actually does.
+
+## What the audit does not fix
+
+The deny-list left the audit working as promised: a denied term now dies on every path, new or kept. But it keeps its birth defect, the one no internal fix resolves: it only knows the names you have already registered. The first leak of any new name still depends on your eye on the diff.
+
+The next entry is about attacking exactly that, and it is the one that brings me to the project's present.
+
+Code at [github.com/tiagolauer/pieces-to-agents](https://github.com/tiagolauer/pieces-to-agents), try it with:
+
+```bash
+npx pieces-to-agents
+```
+
+So: which sentence does your program print with confidence that you never verified end to end? Mine said "permanently". Auditing my own text was more embarrassing than auditing my own code.

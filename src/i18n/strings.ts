@@ -1,8 +1,32 @@
-export type Lang = 'en' | 'pt';
+export const LANGS = ['en', 'pt'] as const;
+
+export type Lang = (typeof LANGS)[number];
+
+export function isLang(value: string): value is Lang {
+  return LANGS.includes(value as Lang);
+}
 
 export const T = {
   en: {
     n_about: 'About', n_skills: 'Skills', n_exp: 'Experience', n_os: 'Open Source', n_contact: 'Contact',
+    n_blog: 'Blog',
+    s_blog: 'Writing',
+    b_lead: 'Notes on architecture, performance and the decisions behind them.',
+    b_empty: 'No posts in English yet.',
+    b_search: 'Search posts…',
+    b_no_results: 'No post matches that search.',
+    b_view_one: 'view', b_view_many: 'views',
+    cm_title: 'Comments',
+    cm_name_ph: 'Name or nickname',
+    cm_body_ph: 'Your comment',
+    cm_send: 'Post comment',
+    cm_sending: 'Sending…',
+    cm_empty: 'No comments yet. Start the conversation.',
+    cm_error: 'Could not post your comment. Try again in a minute.',
+    cm_author: 'Author',
+    b_back: '← All posts',
+    b_read: 'Read →',
+    b_home: '← Back to portfolio',
     h_avail: 'Available · Full-Stack Tech Lead — Mobile & Web',
     h_tagline: 'Tech Lead who ships systems from prototype to 10K+ users in production.',
     h_loc: 'Brusque, Brazil · 6+ years · React Native, .NET/C#, Vue 3 · 3 countries',
@@ -61,6 +85,24 @@ export const T = {
   },
   pt: {
     n_about: 'Sobre', n_skills: 'Stack', n_exp: 'Experiência', n_os: 'Open Source', n_contact: 'Contato',
+    n_blog: 'Blog',
+    s_blog: 'Escritos',
+    b_lead: 'Notas sobre arquitetura, performance e as decisões por trás delas.',
+    b_empty: 'Nenhum post em português ainda.',
+    b_search: 'Buscar posts…',
+    b_no_results: 'Nenhum post corresponde à busca.',
+    b_view_one: 'visualização', b_view_many: 'visualizações',
+    cm_title: 'Comentários',
+    cm_name_ph: 'Nome ou apelido',
+    cm_body_ph: 'Seu comentário',
+    cm_send: 'Comentar',
+    cm_sending: 'Enviando…',
+    cm_empty: 'Nenhum comentário ainda. Comece a conversa.',
+    cm_error: 'Não foi possível enviar o comentário. Tente de novo em um minuto.',
+    cm_author: 'Autor',
+    b_back: '← Todos os posts',
+    b_read: 'Ler →',
+    b_home: '← Voltar ao portfólio',
     h_avail: 'Disponível · Tech Lead Full-Stack — Mobile & Web',
     h_tagline: 'Tech Lead que leva sistemas de protótipo a 10 mil+ usuários em produção.',
     h_loc: 'Brusque, Brasil · 6+ anos · React Native, .NET/C#, Vue 3 · 3 países',
