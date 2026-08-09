@@ -66,12 +66,13 @@ export default async function BlogIndex({
               slug: post.slug,
               title: post.meta.title,
               description: post.meta.description,
+              series: post.meta.series,
               date: post.meta.date,
               formattedDate: formatPostDate(post.meta.date, lang),
               tags: post.meta.tags,
             }))}
             lang={lang}
-            labels={{ search: t.b_search, noResults: t.b_no_results, read: t.b_read }}
+            labels={{ search: t.b_search, noResults: t.b_no_results, read: t.b_read, misc: t.b_misc }}
           />
         )}
 

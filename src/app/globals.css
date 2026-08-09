@@ -932,3 +932,14 @@ footer {
 .comment-textarea { resize: vertical; min-height: 6rem; }
 .comment-error { font-size: 0.875rem; color: var(--primary); }
 .comment-form .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.post-series { margin-bottom: 2.75rem; }
+.series-title {
+  font-family: var(--font-d);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}

@@ -14,6 +14,7 @@ import NerPt, { meta as nerPtMeta } from './capitalization-is-my-ner-model.pt.md
 export interface PostMeta {
   title: string;
   description: string;
+  series?: string;
   date: string;
   tags: readonly string[];
   cover?: string;

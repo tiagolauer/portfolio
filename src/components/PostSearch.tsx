@@ -8,6 +8,7 @@ export interface PostSummary {
   slug: string;
   title: string;
   description: string;
+  series?: string;
   date: string;
   formattedDate: string;
   tags: readonly string[];
@@ -20,6 +21,7 @@ interface PostSearchProps {
     search: string;
     noResults: string;
     read: string;
+    misc: string;
   };
 }
 
@@ -31,16 +33,35 @@ export function matchesQuery(post: PostSummary, query: string): boolean {
   const needle = normalize(query.trim());
   if (!needle) return true;
 
-  const haystack = normalize([post.title, post.description, ...post.tags].join(' '));
+  const haystack = normalize(
+    [post.title, post.description, post.series ?? '', ...post.tags].join(' ')
+  );
   return needle.split(/\s+/).every((term) => haystack.includes(term));
+}
+
+function groupBySeries(
+  posts: readonly PostSummary[],
+  miscLabel: string
+): [string, PostSummary[]][] {
+  const groups = new Map<string, PostSummary[]>();
+  for (const post of posts) {
+    const key = post.series ?? miscLabel;
+    const bucket = groups.get(key);
+    if (bucket) {
+      bucket.push(post);
+    } else {
+      groups.set(key, [post]);
+    }
+  }
+  return [...groups.entries()];
 }
 
 export function PostSearch({ posts, lang, labels }: PostSearchProps) {
   const [query, setQuery] = useState('');
 
-  const results = useMemo(
-    () => posts.filter((post) => matchesQuery(post, query)),
-    [posts, query]
+  const groups = useMemo(
+    () => groupBySeries(posts.filter((post) => matchesQuery(post, query)), labels.misc),
+    [posts, query, labels.misc]
   );
 
   return (
@@ -55,28 +76,33 @@ export function PostSearch({ posts, lang, labels }: PostSearchProps) {
         autoComplete="off"
       />
 
-      {results.length === 0 ? (
+      {groups.length === 0 ? (
         <p className="blog-empty">{labels.noResults}</p>
       ) : (
-        <ul className="post-list">
-          {results.map((post) => (
-            <li key={post.slug}>
-              <Link href={`/${lang}/blog/${post.slug}`} className="post-card">
-                <time className="post-date" dateTime={post.date}>{post.formattedDate}</time>
-                <h2 className="post-card-title">{post.title}</h2>
-                <p className="post-card-desc">{post.description}</p>
-                <div className="post-card-foot">
-                  <span className="post-tags">
-                    {post.tags.map((tag) => (
-                      <span key={tag} className="badge">{tag}</span>
-                    ))}
-                  </span>
-                  <span className="proj-link">{labels.read}</span>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        groups.map(([series, seriesPosts]) => (
+          <section key={series} className="post-series">
+            <h2 className="series-title">{series}</h2>
+            <ul className="post-list">
+              {seriesPosts.map((post) => (
+                <li key={post.slug}>
+                  <Link href={`/${lang}/blog/${post.slug}`} className="post-card">
+                    <time className="post-date" dateTime={post.date}>{post.formattedDate}</time>
+                    <h3 className="post-card-title">{post.title}</h3>
+                    <p className="post-card-desc">{post.description}</p>
+                    <div className="post-card-foot">
+                      <span className="post-tags">
+                        {post.tags.map((tag) => (
+                          <span key={tag} className="badge">{tag}</span>
+                        ))}
+                      </span>
+                      <span className="proj-link">{labels.read}</span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
       )}
     </>
   );
