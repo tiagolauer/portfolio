@@ -22,6 +22,9 @@ interface PostSearchProps {
     noResults: string;
     read: string;
     misc: string;
+    seriesBack: string;
+    postOne: string;
+    postMany: string;
   };
 }
 
@@ -56,13 +59,51 @@ function groupBySeries(
   return [...groups.entries()];
 }
 
+function PostList({
+  posts,
+  lang,
+  readLabel,
+}: {
+  posts: readonly PostSummary[];
+  lang: Lang;
+  readLabel: string;
+}) {
+  return (
+    <ul className="post-list">
+      {posts.map((post) => (
+        <li key={post.slug}>
+          <Link href={`/${lang}/blog/${post.slug}`} className="post-card">
+            <time className="post-date" dateTime={post.date}>{post.formattedDate}</time>
+            <h3 className="post-card-title">{post.title}</h3>
+            <p className="post-card-desc">{post.description}</p>
+            <div className="post-card-foot">
+              <span className="post-tags">
+                {post.tags.map((tag) => (
+                  <span key={tag} className="badge">{tag}</span>
+                ))}
+              </span>
+              <span className="proj-link">{readLabel}</span>
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function PostSearch({ posts, lang, labels }: PostSearchProps) {
   const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<string | null>(null);
 
-  const groups = useMemo(
-    () => groupBySeries(posts.filter((post) => matchesQuery(post, query)), labels.misc),
-    [posts, query, labels.misc]
+  const groups = useMemo(() => groupBySeries(posts, labels.misc), [posts, labels.misc]);
+
+  const searching = query.trim().length > 0;
+  const results = useMemo(
+    () => (searching ? groupBySeries(posts.filter((p) => matchesQuery(p, query)), labels.misc) : []),
+    [posts, query, searching, labels.misc]
   );
+
+  const selectedGroup = groups.find(([series]) => series === selected);
 
   return (
     <>
@@ -76,33 +117,43 @@ export function PostSearch({ posts, lang, labels }: PostSearchProps) {
         autoComplete="off"
       />
 
-      {groups.length === 0 ? (
-        <p className="blog-empty">{labels.noResults}</p>
+      {searching ? (
+        results.length === 0 ? (
+          <p className="blog-empty">{labels.noResults}</p>
+        ) : (
+          results.map(([series, seriesPosts]) => (
+            <section key={series} className="post-series">
+              <h2 className="series-title">{series}</h2>
+              <PostList posts={seriesPosts} lang={lang} readLabel={labels.read} />
+            </section>
+          ))
+        )
+      ) : selectedGroup ? (
+        <section className="post-series">
+          <button className="series-back" onClick={() => setSelected(null)}>
+            {labels.seriesBack}
+          </button>
+          <h2 className="series-title">{selectedGroup[0]}</h2>
+          <PostList posts={selectedGroup[1]} lang={lang} readLabel={labels.read} />
+        </section>
       ) : (
-        groups.map(([series, seriesPosts]) => (
-          <section key={series} className="post-series">
-            <h2 className="series-title">{series}</h2>
-            <ul className="post-list">
-              {seriesPosts.map((post) => (
-                <li key={post.slug}>
-                  <Link href={`/${lang}/blog/${post.slug}`} className="post-card">
-                    <time className="post-date" dateTime={post.date}>{post.formattedDate}</time>
-                    <h3 className="post-card-title">{post.title}</h3>
-                    <p className="post-card-desc">{post.description}</p>
-                    <div className="post-card-foot">
-                      <span className="post-tags">
-                        {post.tags.map((tag) => (
-                          <span key={tag} className="badge">{tag}</span>
-                        ))}
-                      </span>
-                      <span className="proj-link">{labels.read}</span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))
+        <ul className="post-list">
+          {groups.map(([series, seriesPosts]) => (
+            <li key={series}>
+              <button className="post-card series-card" onClick={() => setSelected(series)}>
+                <h2 className="post-card-title">{series}</h2>
+                <div className="post-card-foot">
+                  <span className="series-count">
+                    {seriesPosts.length} {seriesPosts.length === 1 ? labels.postOne : labels.postMany}
+                    {' · '}
+                    {seriesPosts[0].formattedDate}
+                  </span>
+                  <span className="proj-link">→</span>
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </>
   );

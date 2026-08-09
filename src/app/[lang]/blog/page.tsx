@@ -72,7 +72,15 @@ export default async function BlogIndex({
               tags: post.meta.tags,
             }))}
             lang={lang}
-            labels={{ search: t.b_search, noResults: t.b_no_results, read: t.b_read, misc: t.b_misc }}
+            labels={{
+              search: t.b_search,
+              noResults: t.b_no_results,
+              read: t.b_read,
+              misc: t.b_misc,
+              seriesBack: t.b_series_back,
+              postOne: t.b_post_one,
+              postMany: t.b_post_many,
+            }}
           />
         )}
 

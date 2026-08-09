@@ -943,3 +943,32 @@ footer {
   color: var(--primary);
   margin-bottom: 1rem;
 }
+
+.series-card {
+  width: 100%;
+  text-align: left;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.series-card .post-card-title { margin-top: 0; }
+.series-count {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.series-back {
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  transition: color 0.2s;
+}
+.series-back:hover { color: var(--primary); }
