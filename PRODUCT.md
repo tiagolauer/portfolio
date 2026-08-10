@@ -10,7 +10,7 @@ Technical recruiters, engineering managers, and hiring leads evaluating Tiago Es
 
 ## Product Purpose
 
-A single-page portfolio (Next.js, EN/PT) that positions Tiago as a Full-Stack Technical Lead through verifiable, quantified engineering outcomes rather than adjectives. Success: a recruiter recognizes seniority and domain fit within seconds of landing on the hero, and converts to a case-study read or contact.
+A multi-page portfolio with an engineering blog (Next.js, EN/PT) that positions Tiago as a Full-Stack Technical Lead through verifiable, quantified engineering outcomes rather than adjectives. Success: a recruiter recognizes seniority and domain fit within seconds of landing on the hero, and converts to a case-study read, a blog post, or contact.
 
 ## Brand Personality
 
