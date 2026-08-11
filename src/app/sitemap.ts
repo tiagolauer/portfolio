@@ -1,10 +1,14 @@
 import type { MetadataRoute } from 'next';
 import { POSTS } from '@/content/posts';
+import { PROJECTS } from '@/content/projects';
 
 export const dynamic = 'force-static';
 
 const SITE_URL = 'https://tiagolauer.dev';
-const PATHS = ['', '/about', '/skills', '/experience', '/open-source', '/contact', '/blog'];
+const PATHS = [
+  '', '/about', '/skills', '/experience', '/open-source', '/contact', '/blog',
+  ...PROJECTS.map((project) => `/open-source/${project.slug}`),
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
