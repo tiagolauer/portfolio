@@ -1,9 +1,5 @@
-import { Hero } from '@/components/sections';
+import { BentoHome } from '@/components/BentoHome';
 
 export default function HomePage() {
-  return (
-    <main>
-      <Hero />
-    </main>
-  );
+  return <BentoHome />;
 }

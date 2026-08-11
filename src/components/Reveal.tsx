@@ -2,6 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { ENTER_FROM, ENTER_TO, SPRING_SOFT } from '@/lib/motion';
 
 interface RevealProps {
   children: React.ReactNode;
@@ -17,9 +18,9 @@ export function Reveal({ children, delay = 0, className = '' }: RevealProps) {
     <motion.div
       ref={ref}
       className={className || undefined}
-      initial={{ opacity: 0, y: 18 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-      transition={{ duration: 0.65, delay: delay / 1000, ease: [0.16, 1, 0.3, 1] }}
+      initial={ENTER_FROM}
+      animate={inView ? ENTER_TO : ENTER_FROM}
+      transition={{ ...SPRING_SOFT, delay: delay / 1000 }}
     >
       {children}
     </motion.div>

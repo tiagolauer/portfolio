@@ -13,7 +13,7 @@ export function ScrollProgress() {
         left: 0,
         right: 0,
         height: '2px',
-        background: 'oklch(0.60 0.155 20)',
+        background: 'var(--primary)',
         transformOrigin: '0%',
         zIndex: 200,
       }}
