@@ -66,7 +66,7 @@ export async function generateMetadata({
       images: [OG_IMAGE],
     },
     other: {
-      'theme-color': '#0d0d0d',
+      'theme-color': '#0a0a0d',
     },
   };
 }

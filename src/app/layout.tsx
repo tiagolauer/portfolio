@@ -1,19 +1,12 @@
 import type { Metadata } from 'next';
-import { Unbounded, Figtree } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
+import { SPRING_SOFT } from '@/lib/motion';
 import './globals.css';
 
-const unbounded = Unbounded({
+const onest = Onest({
   subsets: ['latin'],
-  weight: ['700', '800', '900'],
-  variable: '--font-unbounded',
-  display: 'swap',
-});
-
-const figtree = Figtree({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-figtree',
+  variable: '--font-onest',
   display: 'swap',
 });
 
@@ -30,9 +23,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${unbounded.variable} ${figtree.variable}`}>
+    <html lang="en" suppressHydrationWarning className={onest.variable}>
       <body>
-        <MotionConfig reducedMotion="user">
+        <MotionConfig reducedMotion="user" transition={SPRING_SOFT}>
           {children}
         </MotionConfig>
       </body>
