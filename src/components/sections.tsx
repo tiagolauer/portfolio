@@ -12,12 +12,6 @@ import type { T } from '@/i18n/strings';
 const EASE = [0.16, 1, 0.3, 1] as const;
 const CONTACT_EMAIL = 'tiagoestrelalauer@gmail.com';
 
-const NAME_WORDS = [
-  { text: 'TIAGO',   highlight: false },
-  { text: 'ESTRELA', highlight: true  },
-  { text: 'LAUER',   highlight: false },
-];
-
 const wordContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
@@ -53,22 +47,14 @@ export function Hero() {
         </motion.div>
 
         <motion.h1
-          className="hero-name"
+          className="hero-title"
           variants={wordContainer}
           initial="hidden"
           animate="visible"
         >
-          {NAME_WORDS.map(({ text, highlight }) => (
-            <span key={text} style={{ overflow: 'hidden', display: 'block' }}>
-              <motion.span
-                variants={wordItem}
-                style={{ display: 'block' }}
-                className={highlight ? 'hl' : undefined}
-              >
-                {text}
-              </motion.span>
-            </span>
-          ))}
+          <span style={{ overflow: 'hidden', display: 'block' }}>
+            <motion.span variants={wordItem} style={{ display: 'block' }}>{t('h_tagline')}</motion.span>
+          </span>
         </motion.h1>
 
         <motion.div
@@ -79,7 +65,7 @@ export function Hero() {
           animate="visible"
         >
           <div>
-            <p className="hero-tagline">{t('h_tagline')}</p>
+            <p className="hero-tagline">{t('h_support')}</p>
             <p className="hero-location">{t('h_loc')}</p>
           </div>
           <div className="hero-actions">
@@ -88,18 +74,83 @@ export function Hero() {
           </div>
         </motion.div>
 
-        <motion.div
-          className="hero-proof"
-          custom={0.85}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-        >
-          <AnimatedStat variant="inline" rawVal={10} suffix="K+" label={t('st_hero_usr')} />
-          <AnimatedStat variant="inline" rawVal={62} suffix="%"  label={t('st_hero_bundle')} />
-          <AnimatedStat variant="inline" rawVal={10} suffix="×"  label={t('st_hero_perf')} />
-          <AnimatedStat variant="inline" rawVal={40} suffix="%"  label={t('st_hero_dev')} />
-        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+const SELECTED_WORK = [
+  {
+    name: 'OwlSQL',
+    label: 'TypeScript · SQL · Developer tooling',
+    description: 'work_owlsql' as const,
+    status: 'work_status_active' as const,
+    href: 'https://github.com/tiagolauer/OwlSQL',
+  },
+  {
+    name: 'pieces-to-agents',
+    label: 'Node.js · MCP · Local-first AI tooling',
+    description: 'work_pieces' as const,
+    status: 'work_status_maintained' as const,
+    href: 'https://github.com/tiagolauer/pieces-to-agents',
+  },
+] as const;
+
+const APPROACH = [1, 2, 3, 4].map((number) => ({
+  title: `approach_${number}t` as keyof typeof T.en,
+  description: `approach_${number}d` as keyof typeof T.en,
+}));
+
+export function SelectedWork() {
+  const { t } = useLang();
+  return (
+    <section id="work">
+      <div className="wrap">
+        <Reveal className="section-head">
+          <div>
+            <h2 className="section-title">{t('s_work')}</h2>
+            <p className="section-lead">{t('work_lead')}</p>
+          </div>
+        </Reveal>
+        <div className="proj-grid">
+          {SELECTED_WORK.map((project, i) => (
+            <Reveal key={project.name} delay={i * 80}>
+              <a href={project.href} target="_blank" rel="noopener noreferrer" className="proj-card">
+                <div className="proj-label">{project.label}</div>
+                <h3 className="proj-name">{project.name}</h3>
+                <p className="proj-desc">{t(project.description)}</p>
+                <div className="proj-foot">
+                  <span className="proj-lang">{t(project.status)}</span>
+                  <span className="proj-link">{t('work_view')}</span>
+                </div>
+              </a>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function EngineeringApproach() {
+  const { t } = useLang();
+  return (
+    <section id="approach">
+      <div className="wrap">
+        <Reveal className="section-head">
+          <div>
+            <h2 className="section-title">{t('s_approach')}</h2>
+            <p className="section-lead">{t('approach_lead')}</p>
+          </div>
+        </Reveal>
+        <div>
+          {APPROACH.map(({ title, description }, i) => (
+            <Reveal key={title} delay={i * 55} className="skill-row">
+              <span className="skill-cat">{t(title)}</span>
+              <span className="skill-items">{t(description)}</span>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );
