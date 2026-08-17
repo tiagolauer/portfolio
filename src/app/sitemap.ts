@@ -21,7 +21,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: path === '' ? (lang === 'en' ? 1 : 0.9) : 0.8,
       alternates: {
-        languages: { [other]: `${SITE_URL}/${other}${path}` },
+        languages: {
+          [other]: `${SITE_URL}/${other}${path}`,
+          'x-default': `${SITE_URL}/en${path}`,
+        },
       },
     }));
   });
