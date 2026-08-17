@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Reveal } from '@/components/Reveal';
 import { useLang } from '@/contexts/LangContext';
 import { useCountUp } from '@/hooks/useCountUp';
-import { findProject } from '@/content/projects';
+import { findProject, PROJECTS } from '@/content/projects';
 import { ENTER_FROM, ENTER_TO, HOVER_LIFT, PRESS, SPRING_SNAPPY, SPRING_SOFT } from '@/lib/motion';
 const CONTACT_EMAIL = 'tiagoestrelalauer@gmail.com';
 
@@ -281,6 +281,16 @@ const NPM_PACKAGES: Record<string, string> = {
   owlsql: '@owlsql/core',
 };
 
+const LOCAL_REPOS: GithubRepo[] = PROJECTS.map((project, index) => ({
+  id: index,
+  name: project.name,
+  html_url: project.links[0]?.href ?? '#',
+  description: project.text.en.tagline,
+  language: project.language,
+  stargazers_count: 0,
+  fork: false,
+}));
+
 interface GithubRepo {
   id: number;
   name: string;
@@ -330,7 +340,10 @@ export function OpenSource() {
             .sort((a, b) => featuredRank(a) - featuredRank(b))
         );
       })
-      .catch(() => { if (!cancelled) setFailed(true); });
+      .catch(() => {
+        if (cancelled) return;
+        setRepos(LOCAL_REPOS);
+      });
     return () => { cancelled = true; };
   }, []);
 
