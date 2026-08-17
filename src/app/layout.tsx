@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: 'Tiago Lauer — Software Engineer, Open Source & AI',
     description: 'Software Engineer building developer tools, open source and AI-powered systems.',
     type: 'profile',
-    images: ['https://avatars.githubusercontent.com/u/91141923?v=4'],
+    images: [{ url: '/og.svg', width: 1200, height: 630, alt: 'Tiago Lauer — Software Engineer, Open Source & AI' }],
   },
   twitter: { card: 'summary_large_image' },
 };

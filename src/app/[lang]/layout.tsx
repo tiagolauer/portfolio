@@ -8,7 +8,7 @@ import { HtmlLang } from '@/components/HtmlLang';
 import { Footer } from '@/components/sections';
 
 const SITE_URL = 'https://tiagolauer.dev';
-const OG_IMAGE = 'https://avatars.githubusercontent.com/u/91141923?v=4';
+const OG_IMAGE = `${SITE_URL}/og.svg`;
 
 export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
@@ -54,8 +54,8 @@ export async function generateMetadata({
       images: [
         {
           url: OG_IMAGE,
-          width: 460,
-          height: 460,
+          width: 1200,
+          height: 630,
           alt: 'Tiago Lauer — Software Engineer, Open Source & AI',
         },
       ],
