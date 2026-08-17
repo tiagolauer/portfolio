@@ -7,154 +7,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Reveal } from '@/components/Reveal';
 import { useLang } from '@/contexts/LangContext';
 import { useCountUp } from '@/hooks/useCountUp';
-import type { T } from '@/i18n/strings';
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { findProject } from '@/content/projects';
+import { ENTER_FROM, ENTER_TO, HOVER_LIFT, PRESS, SPRING_SNAPPY, SPRING_SOFT } from '@/lib/motion';
 const CONTACT_EMAIL = 'tiagoestrelalauer@gmail.com';
-
-const wordContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
-};
-
-const wordItem = {
-  hidden:  { y: '105%', opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: EASE } },
-};
-
-const fadeUp = {
-  hidden:  { opacity: 0, y: 16 },
-  visible: (delay: number) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.6, delay, ease: EASE },
-  }),
-};
-
-export function Hero() {
-  const { lang, t } = useLang();
-
-  return (
-    <section id="hero">
-      <div className="wrap">
-        <motion.div
-          className="hero-meta-line"
-          custom={0.6}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-        >
-          {t('h_avail')}
-        </motion.div>
-
-        <motion.h1
-          className="hero-title"
-          variants={wordContainer}
-          initial="hidden"
-          animate="visible"
-        >
-          <span style={{ overflow: 'hidden', display: 'block' }}>
-            <motion.span variants={wordItem} style={{ display: 'block' }}>{t('h_tagline')}</motion.span>
-          </span>
-        </motion.h1>
-
-        <motion.div
-          className="hero-bottom"
-          custom={0.72}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-        >
-          <div>
-            <p className="hero-tagline">{t('h_support')}</p>
-            <p className="hero-location">{t('h_loc')}</p>
-          </div>
-          <div className="hero-actions">
-            <Link href={`/${lang}/open-source`} className="btn btn-fill">{t('h_cta1')}</Link>
-            <Link href={`/${lang}/contact`} className="hero-cta-secondary">{t('h_cta2')}</Link>
-          </div>
-        </motion.div>
-
-      </div>
-    </section>
-  );
-}
-
-const SELECTED_WORK = [
-  {
-    name: 'OwlSQL',
-    label: 'TypeScript · SQL · Developer tooling',
-    description: 'work_owlsql' as const,
-    status: 'work_status_active' as const,
-    href: 'https://github.com/tiagolauer/OwlSQL',
-  },
-  {
-    name: 'pieces-to-agents',
-    label: 'Node.js · MCP · Local-first AI tooling',
-    description: 'work_pieces' as const,
-    status: 'work_status_maintained' as const,
-    href: 'https://github.com/tiagolauer/pieces-to-agents',
-  },
-] as const;
-
-const APPROACH = [1, 2, 3, 4].map((number) => ({
-  title: `approach_${number}t` as keyof typeof T.en,
-  description: `approach_${number}d` as keyof typeof T.en,
-}));
-
-export function SelectedWork() {
-  const { t } = useLang();
-  return (
-    <section id="work">
-      <div className="wrap">
-        <Reveal className="section-head">
-          <div>
-            <h2 className="section-title">{t('s_work')}</h2>
-            <p className="section-lead">{t('work_lead')}</p>
-          </div>
-        </Reveal>
-        <div className="proj-grid">
-          {SELECTED_WORK.map((project, i) => (
-            <Reveal key={project.name} delay={i * 80}>
-              <a href={project.href} target="_blank" rel="noopener noreferrer" className="proj-card">
-                <div className="proj-label">{project.label}</div>
-                <h3 className="proj-name">{project.name}</h3>
-                <p className="proj-desc">{t(project.description)}</p>
-                <div className="proj-foot">
-                  <span className="proj-lang">{t(project.status)}</span>
-                  <span className="proj-link">{t('work_view')}</span>
-                </div>
-              </a>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function EngineeringApproach() {
-  const { t } = useLang();
-  return (
-    <section id="approach">
-      <div className="wrap">
-        <Reveal className="section-head">
-          <div>
-            <h2 className="section-title">{t('s_approach')}</h2>
-            <p className="section-lead">{t('approach_lead')}</p>
-          </div>
-        </Reveal>
-        <div>
-          {APPROACH.map(({ title, description }, i) => (
-            <Reveal key={title} delay={i * 55} className="skill-row">
-              <span className="skill-cat">{t(title)}</span>
-              <span className="skill-items">{t(description)}</span>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 interface StatProps {
   rawVal: number;
@@ -162,23 +17,11 @@ interface StatProps {
   label: string;
   divideBy?: number;
   decimals?: number;
-  variant?: 'card' | 'inline';
 }
 
-function AnimatedStat({ rawVal, suffix, label, divideBy = 1, decimals = 0, variant = 'card' }: StatProps) {
+function AnimatedStat({ rawVal, suffix, label, divideBy = 1, decimals = 0 }: StatProps) {
   const { count, ref } = useCountUp(rawVal, 1400);
   const display = decimals > 0 ? (count / divideBy).toFixed(decimals) : count / divideBy;
-
-  if (variant === 'inline') {
-    return (
-      <div className="hero-proof-item">
-        <span className="hero-proof-val" ref={ref as React.Ref<HTMLSpanElement>}>
-          {display}{suffix}
-        </span>
-        <span className="hero-proof-lbl">{label}</span>
-      </div>
-    );
-  }
 
   return (
     <div className="stat">
@@ -403,21 +246,22 @@ interface ProjCardProps {
   delay?: number;
 }
 
+const MotionLink = motion.create(Link);
+
 function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0 }: ProjCardProps) {
   const ref = useRef<HTMLAnchorElement>(null);
   const inView = useInView(ref, { once: true, margin: '-40px 0px' });
 
   return (
-    <motion.a
+    <MotionLink
       ref={ref}
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
       className="proj-card"
-      initial={{ opacity: 0, y: 18 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-      transition={{ duration: 0.65, delay: delay / 1000, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: 'easeOut' } }}
+      initial={ENTER_FROM}
+      animate={inView ? ENTER_TO : ENTER_FROM}
+      transition={{ ...SPRING_SOFT, delay: delay / 1000 }}
+      whileHover={{ ...HOVER_LIFT, transition: SPRING_SNAPPY }}
+      whileTap={{ ...PRESS, transition: SPRING_SNAPPY }}
     >
       <div className="proj-label">{label}</div>
       <h3 className="proj-name">{name}</h3>
@@ -426,7 +270,7 @@ function ProjCard({ href, label, name, desc, lang: techLang, linkText, delay = 0
         <span className="proj-lang">{techLang}</span>
         <span className="proj-link">{linkText}</span>
       </div>
-    </motion.a>
+    </MotionLink>
   );
 }
 
@@ -435,9 +279,6 @@ const FEATURED_REPOS = ['pieces-to-agents', 'owlsql'];
 const NPM_PACKAGES: Record<string, string> = {
   'pieces-to-agents': 'pieces-to-agents',
   owlsql: '@owlsql/core',
-};
-const REPO_DESC_OVERRIDES: Partial<Record<string, keyof typeof T.en>> = {
-  OwlSQL: 'p_sql_desc',
 };
 
 interface GithubRepo {
@@ -504,20 +345,21 @@ export function OpenSource() {
         {repos && repos.length > 0 && (
           <div className="proj-grid">
             {repos.map((repo, i) => {
-              const override = REPO_DESC_OVERRIDES[repo.name];
-              const weekly = downloads[repo.name.toLowerCase()];
+              const slug = repo.name.toLowerCase();
+              const project = findProject(slug);
+              const weekly = downloads[slug];
               const stats = weekly
                 ? `★ ${repo.stargazers_count} · ${weekly.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')} ${t('p_npm')}`
                 : `★ ${repo.stargazers_count}`;
               return (
                 <ProjCard
                   key={repo.id}
-                  href={repo.html_url}
+                  href={project ? `/${lang}/open-source/${slug}` : repo.html_url}
                   label={repo.language ?? 'Code'}
                   name={repo.name}
-                  desc={override ? t(override) : (repo.description ?? t('os_no_desc'))}
+                  desc={project?.text[lang].tagline ?? repo.description ?? t('os_no_desc')}
                   lang={stats}
-                  linkText={t('p_github')}
+                  linkText={t('p_details')}
                   delay={i * 80}
                 />
               );

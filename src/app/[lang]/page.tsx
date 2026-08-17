@@ -1,11 +1,5 @@
-import { EngineeringApproach, Hero, SelectedWork } from '@/components/sections';
+import { BentoHome } from '@/components/BentoHome';
 
 export default function HomePage() {
-  return (
-    <main>
-      <Hero />
-      <SelectedWork />
-      <EngineeringApproach />
-    </main>
-  );
+  return <BentoHome />;
 }
