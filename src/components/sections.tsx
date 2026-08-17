@@ -51,7 +51,7 @@ export function About() {
     <section id="about">
       <div className="wrap">
         <Reveal className="section-head">
-          <h2 className="section-title">{t('s_about')}</h2>
+          <h1 className="section-title">{t('s_about')}</h1>
         </Reveal>
         <div className="about-grid">
           <Reveal delay={80}>
@@ -114,7 +114,7 @@ export function Skills() {
     <section id="skills">
       <div className="wrap">
         <Reveal className="section-head">
-          <h2 className="section-title">{t('s_skills')}</h2>
+          <h1 className="section-title">{t('s_skills')}</h1>
         </Reveal>
         <div>
           {SKILLS.map(({ key, items }, i) => (
@@ -206,7 +206,7 @@ export function Experience() {
     <section id="experience">
       <div className="wrap">
         <Reveal className="section-head">
-          <h2 className="section-title">{t('s_exp')}</h2>
+          <h1 className="section-title">{t('s_exp')}</h1>
         </Reveal>
         <div className="timeline">
           {JOBS.map((job, i) => (
@@ -350,7 +350,7 @@ export function OpenSource() {
     <section id="open-source">
       <div className="wrap">
         <Reveal className="section-head">
-          <h2 className="section-title">{t('s_os')}</h2>
+          <h1 className="section-title">{t('s_os')}</h1>
         </Reveal>
         {!repos && <p className="proj-desc">{t('os_loading')}</p>}
         {repos && repos.length > 0 && (
@@ -391,7 +391,7 @@ export function Contact() {
       <div className="wrap">
         <Reveal className="contact-grid">
           <div>
-            <h2 className="contact-heading">{t('c_head')}</h2>
+            <h1 className="contact-heading">{t('c_head')}</h1>
             <p className="contact-body">{t('c_body')}</p>
             <motion.a
               href={`mailto:${CONTACT_EMAIL}`}
