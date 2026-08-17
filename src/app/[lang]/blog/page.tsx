@@ -36,6 +36,7 @@ export async function generateMetadata({
       type: 'website',
       locale: lang === 'pt' ? 'pt_BR' : 'en_US',
     },
+    twitter: { card: 'summary_large_image' },
   };
 }
 

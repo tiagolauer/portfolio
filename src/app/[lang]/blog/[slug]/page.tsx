@@ -46,6 +46,7 @@ export async function generateMetadata({
       locale: lang === 'pt' ? 'pt_BR' : 'en_US',
       images: post.meta.cover ? [`${SITE_URL}${post.meta.cover}`] : undefined,
     },
+    twitter: { card: 'summary_large_image' },
   };
 }
 
