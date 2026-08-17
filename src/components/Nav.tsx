@@ -41,7 +41,7 @@ export function Nav() {
   };
 
   return (
-    <nav id="nav" className={`${scrolled ? 'scrolled' : ''}${open ? ' menu-open' : ''}`}>
+    <nav id="nav" aria-label="Primary navigation" className={`${scrolled ? 'scrolled' : ''}${open ? ' menu-open' : ''}`}>
       <div className="wrap">
         <div className="nav-inner">
           <Link href={`/${lang}`} className="nav-logo">TL</Link>
@@ -80,6 +80,7 @@ export function Nav() {
               onClick={() => setOpen(!open)}
               aria-label={lang === 'pt' ? (open ? 'Fechar menu' : 'Abrir menu') : (open ? 'Close menu' : 'Open menu')}
               aria-expanded={open}
+              aria-controls="mobile-navigation"
             >
               <span />
               <span />
@@ -88,7 +89,7 @@ export function Nav() {
         </div>
       </div>
       {open && (
-        <div className="nav-mobile">
+        <div id="mobile-navigation" className="nav-mobile">
           {NAV_LINKS.map(({ slug, key }) => (
             <Link
               key={slug}
