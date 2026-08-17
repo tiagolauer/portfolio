@@ -25,9 +25,12 @@ export async function generateMetadata({
 
   const url = `${SITE_URL}/${lang}/blog/${slug}`;
   const languages = Object.fromEntries(
-    POSTS
-      .filter((translation) => translation.slug === slug)
-      .map((translation) => [translation.lang, `${SITE_URL}/${translation.lang}/blog/${slug}`])
+    [
+      ...POSTS
+        .filter((translation) => translation.slug === slug)
+        .map((translation) => [translation.lang, `${SITE_URL}/${translation.lang}/blog/${slug}`] as const),
+      ['x-default', `${SITE_URL}/en/blog/${slug}`] as const,
+    ]
   );
 
   return {
