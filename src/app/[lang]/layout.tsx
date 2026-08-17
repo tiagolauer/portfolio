@@ -22,13 +22,15 @@ export async function generateMetadata({
   const { lang } = await params;
   const isPt = lang === 'pt';
 
-  const title = 'Tiago Estrela Lauer — Full-Stack Technical Lead';
+  const title = isPt
+    ? 'Tiago Lauer — Software Engineer, Open Source e AI'
+    : 'Tiago Lauer — Software Engineer, Open Source & AI';
   const description = isPt
-    ? 'Tech Lead Full-Stack. 6+ anos construindo aplicações de produção para mobile e web com React Native, TypeScript e Vue.js.'
-    : 'Full-Stack Technical Lead. 6+ years building production-grade mobile and web applications with React Native, TypeScript, and Vue.js.';
+    ? 'Tiago Lauer é um engenheiro de software que constrói ferramentas para desenvolvedores, software open source e sistemas com AI.'
+    : 'Tiago Lauer is a software engineer building developer tools, open-source software and AI-powered systems with TypeScript, Node.js, Vue, React Native and .NET.';
   const ogDescription = isPt
-    ? 'Construindo sistemas que sustentam. 6+ anos em React Native, TypeScript, Vue.js, .NET.'
-    : 'Building systems that hold. 6+ years in React Native, TypeScript, Vue.js, .NET.';
+    ? 'Software Engineer construindo ferramentas para desenvolvedores, open source e sistemas com AI.'
+    : 'Software Engineer building developer tools, open source and AI-powered systems.';
 
   return {
     title,
@@ -54,12 +56,12 @@ export async function generateMetadata({
           url: OG_IMAGE,
           width: 460,
           height: 460,
-          alt: 'Tiago Estrela Lauer — Full-Stack Technical Lead',
+          alt: 'Tiago Lauer — Software Engineer, Open Source & AI',
         },
       ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
       description: ogDescription,
       creator: '@tiagolauer',
@@ -82,7 +84,7 @@ const jsonLd = {
     'https://linkedin.com/in/tiagolauer',
     'mailto:tiagoestrelalauer@gmail.com',
   ],
-  jobTitle: 'Full-Stack Technical Lead',
+  jobTitle: 'Software Engineer',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Brusque',
