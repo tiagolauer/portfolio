@@ -308,7 +308,6 @@ function featuredRank(repo: GithubRepo) {
 export function OpenSource() {
   const { lang, t } = useLang();
   const [repos, setRepos] = useState<GithubRepo[] | null>(null);
-  const [failed, setFailed] = useState(false);
   const [downloads, setDownloads] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -353,8 +352,7 @@ export function OpenSource() {
         <Reveal className="section-head">
           <h2 className="section-title">{t('s_os')}</h2>
         </Reveal>
-        {failed && <p className="proj-desc">{t('os_error')}</p>}
-        {!failed && !repos && <p className="proj-desc">{t('os_loading')}</p>}
+        {!repos && <p className="proj-desc">{t('os_loading')}</p>}
         {repos && repos.length > 0 && (
           <div className="proj-grid">
             {repos.map((repo, i) => {
