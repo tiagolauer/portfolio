@@ -32,8 +32,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const postEntries: MetadataRoute.Sitemap = POSTS.map((post) => ({
     url: `${SITE_URL}/${post.lang}/blog/${post.slug}`,
     lastModified: new Date(post.meta.date),
-    changeFrequency: 'yearly',
+    changeFrequency: 'yearly' as const,
     priority: 0.6,
+    alternates: {
+      languages: {
+        en: `${SITE_URL}/en/blog/${post.slug}`,
+        pt: `${SITE_URL}/pt/blog/${post.slug}`,
+        'x-default': `${SITE_URL}/en/blog/${post.slug}`,
+      },
+    },
   }));
 
   return [...pageEntries, ...postEntries];
