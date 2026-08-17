@@ -11,14 +11,17 @@ const onest = Onest({
 });
 
 export const metadata: Metadata = {
-  title: 'Tiago Estrela Lauer — Full-Stack Technical Lead',
+  title: 'Tiago Lauer — Software Engineer, Open Source & AI',
   description:
-    'Full-Stack Technical Lead. 6+ years building production-grade mobile and web applications with React Native, TypeScript, and Vue.js.',
+    'Tiago Lauer is a software engineer building developer tools, open-source software and AI-powered systems with TypeScript, Node.js, Vue, React Native and .NET.',
+  metadataBase: new URL('https://tiagolauer.dev'),
   openGraph: {
-    title: 'Tiago Estrela Lauer — Full-Stack Technical Lead',
-    description: 'Building systems that hold. 6+ years in React Native, TypeScript, Vue.js, .NET.',
+    title: 'Tiago Lauer — Software Engineer, Open Source & AI',
+    description: 'Software Engineer building developer tools, open source and AI-powered systems.',
+    type: 'profile',
     images: ['https://avatars.githubusercontent.com/u/91141923?v=4'],
   },
+  twitter: { card: 'summary_large_image' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
