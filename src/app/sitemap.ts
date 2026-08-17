@@ -6,7 +6,7 @@ export const dynamic = 'force-static';
 
 const SITE_URL = 'https://tiagolauer.dev';
 const PATHS = [
-  '', '/about', '/skills', '/experience', '/open-source', '/contact', '/blog',
+  '', '/about', '/work', '/skills', '/experience', '/open-source', '/contact', '/blog',
   ...PROJECTS.map((project) => `/open-source/${project.slug}`),
 ];
 

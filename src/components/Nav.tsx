@@ -8,6 +8,7 @@ import type { Lang } from '@/i18n/strings';
 
 const NAV_LINKS = [
   { slug: 'about',       key: 'n_about'  },
+  { slug: 'work',        key: 'n_work'   },
   { slug: 'skills',      key: 'n_skills' },
   { slug: 'experience',  key: 'n_exp'    },
   { slug: 'open-source', key: 'n_os'     },

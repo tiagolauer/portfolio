@@ -8,7 +8,7 @@ export function isLang(value: string): value is Lang {
 
 export const T = {
   en: {
-    n_about: 'About', n_skills: 'Skills', n_exp: 'Experience', n_os: 'Open Source', n_contact: 'Contact',
+    n_about: 'About', n_work: 'Work', n_skills: 'Skills', n_exp: 'Experience', n_os: 'Open Source', n_contact: 'Contact',
     n_blog: 'Blog',
     s_blog: 'Writing',
     b_lead: 'Notes on architecture, performance and the decisions behind them.',
@@ -120,7 +120,7 @@ export const T = {
     bh_blog_pill: 'Architecture and performance notes on the blog',
   },
   pt: {
-    n_about: 'Sobre', n_skills: 'Stack', n_exp: 'Experiência', n_os: 'Open Source', n_contact: 'Contato',
+    n_about: 'Sobre', n_work: 'Projetos', n_skills: 'Stack', n_exp: 'Experiência', n_os: 'Open Source', n_contact: 'Contato',
     n_blog: 'Blog',
     s_blog: 'Escritos',
     b_lead: 'Notas sobre arquitetura, performance e as decisões por trás delas.',
