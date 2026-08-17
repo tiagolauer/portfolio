@@ -19,6 +19,7 @@ export interface ProjectLink {
 export interface Project {
   slug: string;
   name: string;
+  status: Record<Lang, string>;
   language: string;
   stack: string[];
   links: ProjectLink[];
@@ -30,6 +31,7 @@ export const PROJECTS: Project[] = [
   {
     slug: 'pieces-to-agents',
     name: 'pieces-to-agents',
+    status: { en: 'Active open source', pt: 'Open source ativo' },
     language: 'TypeScript',
     stack: ['TypeScript', 'Node.js ≥ 20', 'MCP', 'CLI'],
     links: [
@@ -79,6 +81,7 @@ npx pieces-to-agents --days 30 --target CLAUDE.md --alias "my product"`,
   {
     slug: 'owlsql',
     name: 'OwlSQL',
+    status: { en: 'Active open source', pt: 'Open source ativo' },
     language: 'TypeScript',
     stack: ['TypeScript', 'Template Literal Types', 'ESM', 'Node.js ≥ 20'],
     links: [
