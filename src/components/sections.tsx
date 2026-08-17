@@ -361,7 +361,9 @@ export function OpenSource() {
               const weekly = downloads[slug];
               const stats = weekly
                 ? `★ ${repo.stargazers_count} · ${weekly.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')} ${t('p_npm')}`
-                : `★ ${repo.stargazers_count}`;
+                : repo.stargazers_count > 0
+                  ? `★ ${repo.stargazers_count}`
+                  : project?.status[lang] ?? t('os_no_desc');
               return (
                 <ProjCard
                   key={repo.id}
