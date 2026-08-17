@@ -82,7 +82,6 @@ const jsonLd = {
   sameAs: [
     'https://github.com/tiagolauer',
     'https://linkedin.com/in/tiagolauer',
-    'mailto:tiagoestrelalauer@gmail.com',
   ],
   jobTitle: 'Software Engineer',
   address: {
