@@ -65,6 +65,7 @@ export default async function ProjectPage({
           </div>
           <h1 className="post-title">{project.name}</h1>
           <p className="post-desc">{text.tagline}</p>
+          <p className="proj-label">{project.status[lang]}</p>
           <div className="post-tags">
             {project.stack.map((item) => (
               <span key={item} className="badge">{item}</span>
