@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Tiago Lauer — Software Engineer</title>
+  <desc id="desc">Software Engineer building developer tools, open-source software and AI-powered systems.</desc>
+  <rect width="1200" height="630" fill="#111827"/>
+  <circle cx="1030" cy="80" r="280" fill="#315fa8" opacity=".32"/>
+  <circle cx="160" cy="620" r="260" fill="#5b3c91" opacity=".28"/>
+  <rect x="70" y="70" width="1060" height="490" rx="32" fill="#ffffff" opacity=".06" stroke="#ffffff" stroke-opacity=".2"/>
+  <text x="110" y="145" fill="#9fbfff" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="5">SOFTWARE ENGINEER · OPEN SOURCE · AI</text>
+  <text x="110" y="285" fill="#f8fafc" font-family="Arial, sans-serif" font-size="72" font-weight="700">Tiago Lauer</text>
+  <text x="110" y="365" fill="#dbe4f2" font-family="Arial, sans-serif" font-size="34">Developer tools, open-source software</text>
+  <text x="110" y="415" fill="#dbe4f2" font-family="Arial, sans-serif" font-size="34">and AI-powered systems.</text>
+  <text x="110" y="505" fill="#9caaca" font-family="Arial, sans-serif" font-size="22">tiagolauer.dev</text>
+</svg>
