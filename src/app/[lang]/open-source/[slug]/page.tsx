@@ -23,7 +23,10 @@ export async function generateMetadata({
 
   const url = `${SITE_URL}/${lang}/open-source/${slug}`;
   const languages = Object.fromEntries(
-    LANGS.map((altLang) => [altLang, `${SITE_URL}/${altLang}/open-source/${slug}`])
+    [
+      ...LANGS.map((altLang) => [altLang, `${SITE_URL}/${altLang}/open-source/${slug}`] as const),
+      ['x-default', `${SITE_URL}/en/open-source/${slug}`] as const,
+    ]
   );
 
   return {
