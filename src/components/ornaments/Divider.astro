@@ -1,0 +1,21 @@
+---
+import Diamond from "./Diamond.astro";
+import Rule from "./Rule.astro";
+---
+
+<div class="divider" aria-hidden="true">
+  <Rule fade="start" />
+  <Diamond />
+  <Diamond hollow />
+  <Diamond />
+  <Rule fade="end" />
+</div>
+
+<style>
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: min(420px, 80%);
+  }
+</style>

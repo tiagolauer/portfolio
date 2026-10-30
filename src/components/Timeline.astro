@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  items: CollectionEntry<"timeline">["data"][];
+}
+
+const { items } = Astro.props;
+---
+
+<ol>
+  {
+    items.map((item, index) => (
+      <li>
+        <span class:list={["node", { current: index === 0 }]} aria-hidden="true" />
+        <span class="period">{item.period}</span>
+        <span>{item.description}</span>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin: 0 0 0 8px;
+    padding: 0 0 0 32px;
+    list-style: none;
+    border-left: 2px dashed #6b5428;
+  }
+
+  li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .node {
+    position: absolute;
+    top: 9px;
+    left: -41px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--gold);
+    background: var(--night);
+    transform: rotate(45deg);
+  }
+
+  .current {
+    top: 8px;
+    left: -42px;
+    width: 14px;
+    height: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--gold-pale), var(--gold) 50%, var(--gold-deep));
+    box-shadow: 0 0 10px rgb(241 210 122 / 0.6);
+  }
+
+  .period {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+  }
+</style>

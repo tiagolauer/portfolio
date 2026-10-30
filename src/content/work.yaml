@@ -1,0 +1,73 @@
+- id: ohubdev
+  order: 1
+  company: ohubdev
+  role: Software engineer
+  period: "2026"
+  headline: Cut the audit screens from five requests to one
+  summary: >-
+    The audit views needed deeply nested data and made five REST calls to get it. I added a GraphQL
+    layer to the ASP.NET Core backend with Hot Chocolate, so each view now loads in a single request.
+    I also set up Azure AD sign-in with access control, and rewrote the time-record rules so audit
+    data matches to the millisecond.
+  stack: [C#, ASP.NET Core, GraphQL, Azure AD, CI/CD]
+
+- id: h2k
+  order: 2
+  company: H2K
+  role: Mobile developer, contract
+  period: 2025 to 2026
+  headline: Shipped the mobile apps for a SaaS with 10,000+ users
+  summary: >-
+    I set up the React Native and Expo architecture and a shared TypeScript component library that
+    3+ apps are built on. Data moved from REST to Apollo GraphQL with a normalized cache, so the apps
+    keep working offline. Releases to iOS and Android go out through GitHub Actions and EAS. I also
+    mentored two junior developers.
+  stack: [React Native, Expo, Apollo, Firebase]
+
+- id: beeasy
+  order: 3
+  company: Beeasy Digital
+  role: Frontend developer, contract
+  period: 2025 to 2026
+  headline: Moved a Vue 2 dashboard to Vue 3 while 500+ businesses kept using it
+  summary: >-
+    I planned and ran the migration to Vue 3.5 and the Composition API without taking production
+    down. Scattered REST calls became typed Apollo queries generated from the schema, and the
+    heaviest views moved onto Web Workers.
+  stack: [Vue 3, TypeScript, GraphQL Code Generator, Web Workers]
+
+- id: djin
+  order: 4
+  company: DJIN Tech Solutions
+  role: Software developer, remote
+  period: 2023 to 2025
+  headline: Made 50,000-row spreadsheets usable in the browser
+  summary: >-
+    A SaaS for 1,000+ enterprise clients across APAC, with real-time views over 100,000+ records. I
+    moved spreadsheet rendering to HTML Canvas and pushed the heavy computation to Web Workers. I also
+    built the companion React Native app on the same GraphQL API.
+  stack: [Nuxt, Canvas, GraphQL, React Native, .NET reporting]
+
+- id: atria
+  order: 5
+  company: ATRIA
+  role: Technical lead
+  period: "[period]"
+  headline: Technical reference for a group of products
+  summary: >-
+    I set the architecture, build the difficult parts and write down why, in decision records that
+    every project keeps. The work covers WhatsApp automation with n8n, local AI models, and web and
+    mobile apps.
+  products:
+    - name: Vivarium
+      description: a React and Phaser product
+    - name: San Marino
+      description: "[what it does]"
+    - name: EMonitorX
+      description: "[what it does]"
+    - name: Ouro Safra
+      description: "[what it does]"
+    - name: OdontoQuiz
+      description: "[what it does]"
+    - name: Farma Débora
+      description: "[what it does]"

@@ -1,0 +1,39 @@
+- id: owlsql
+  order: 1
+  name: OwlSQL
+  rarity: legendary
+  status: released
+  paragraphs:
+    - >-
+      You write normal SQL. OwlSQL parses it inside the type system, infers the result from your
+      schema, and returns a Result instead of throwing. There's no ORM, no query builder and no codegen
+      step.
+    - >-
+      I wrote and maintain all of it: the type-level parser, schema inference, the drivers, docs, CI
+      and the npm releases.
+  link:
+    label: OwlSQL on GitHub
+    href: https://github.com/tiagolauer
+
+- id: pieces-to-agents
+  order: 2
+  name: pieces-to-agents
+  rarity: epic
+  status: released
+  paragraphs:
+    - >-
+      Turns Pieces long-term memory into AGENTS.md files scoped to a single repository, so coding
+      agents start with real project context. It runs locally and redacts before anything gets written.
+  link:
+    label: Source on GitHub
+    href: https://github.com/tiagolauer
+
+- id: depfence
+  order: 3
+  name: DepFence
+  rarity: rare
+  status: in-progress
+  paragraphs:
+    - >-
+      A self-hosted scanner for the npm supply chain. It statically analyzes lifecycle scripts and
+      Phantom Gyp attack vectors before a package gets the chance to run.

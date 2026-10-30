@@ -1,0 +1,52 @@
+---
+import Gems from "./Gems.astro";
+
+const PADDING = {
+  none: "0",
+  medium: "32px 28px",
+  large: "36px",
+} as const;
+
+interface Props {
+  as?: "article" | "div" | "figure";
+  padding?: keyof typeof PADDING;
+}
+
+const { as: Tag = "div", padding = "large" } = Astro.props;
+---
+
+<Tag class="parchment" style={`--parchment-padding: ${PADDING[padding]}`}>
+  <Gems />
+  <slot />
+</Tag>
+
+<style>
+  .parchment {
+    position: relative;
+    margin: 0;
+    padding: var(--parchment-padding);
+    border: 1px solid var(--gold-line);
+    border-radius: 3px;
+    outline: 1px solid rgb(140 106 37 / 0.55);
+    outline-offset: 5px;
+    color: var(--ink);
+    background-color: var(--parchment);
+    background-image:
+      radial-gradient(circle at 18% 12%, rgb(255 255 255 / 0.4), rgb(255 255 255 / 0) 42%),
+      radial-gradient(circle at 88% 92%, rgb(120 78 28 / 0.22), rgb(120 78 28 / 0) 46%),
+      radial-gradient(circle at 62% 38%, rgb(120 78 28 / 0.09), rgb(120 78 28 / 0) 30%),
+      radial-gradient(circle at 8% 85%, rgb(120 78 28 / 0.14), rgb(120 78 28 / 0) 30%);
+    box-shadow:
+      inset 0 0 70px rgb(110 70 20 / 0.38),
+      0 18px 40px rgb(0 0 0 / 0.45);
+  }
+
+  .parchment :global(a) {
+    color: var(--ink-accent);
+  }
+
+  .parchment :global(a:hover) {
+    color: var(--ink);
+    text-shadow: none;
+  }
+</style>

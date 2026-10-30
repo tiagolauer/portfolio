@@ -1,0 +1,122 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { STATUS_LABEL } from "../domain/project";
+
+interface Props {
+  project: CollectionEntry<"projects">["data"];
+  featured?: boolean;
+}
+
+const { project, featured = false } = Astro.props;
+const statusLabel = STATUS_LABEL[project.status];
+const [lead, ...rest] = project.paragraphs;
+---
+
+<article class:list={["relic", project.rarity, { featured }]}>
+  <h3>
+    {project.name}
+    {statusLabel && <span class="status">{` (${statusLabel})`}</span>}
+  </h3>
+  <p>{lead}</p>
+  {rest.map((paragraph) => <p class="secondary">{paragraph}</p>)}
+  {project.link && <a href={project.link.href}>{project.link.label}</a>}
+</article>
+
+<style>
+  .relic {
+    --rarity: var(--rare);
+    --rarity-text: var(--rare-text);
+    --rarity-link: var(--link);
+    --rarity-glow: rgb(61 139 255 / 0.3);
+    --surface-top: #141922;
+    --surface-bottom: #11151b;
+
+    flex: 1 1 320px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 32px;
+    border: 1px solid var(--rarity);
+    border-radius: 6px;
+    background: linear-gradient(180deg, var(--surface-top), var(--surface-bottom));
+    transition:
+      box-shadow 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .relic:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px var(--rarity),
+      0 0 32px var(--rarity-glow);
+  }
+
+  .legendary {
+    --rarity: var(--legendary);
+    --rarity-text: var(--legendary-text);
+    --rarity-link: var(--legendary-link);
+    --rarity-glow: rgb(255 128 0 / 0.35);
+    --surface-top: #1f1912;
+    --surface-bottom: #16120d;
+    box-shadow: inset 0 0 40px rgb(255 128 0 / 0.08);
+  }
+
+  .epic {
+    --rarity: var(--epic);
+    --rarity-text: var(--epic-text);
+    --rarity-link: var(--epic-link);
+    --rarity-glow: rgb(163 53 238 / 0.35);
+    --surface-top: #1c1720;
+    --surface-bottom: #15121a;
+  }
+
+  .featured {
+    flex-basis: 100%;
+    gap: 14px;
+    padding: 40px;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--rarity-text);
+  }
+
+  .featured h3 {
+    font-size: clamp(32px, 4vw, 44px);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 22px var(--rarity-glow);
+  }
+
+  .status {
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0;
+    color: #a9b6c8;
+  }
+
+  p {
+    max-width: 680px;
+  }
+
+  .secondary {
+    color: #c8bca2;
+  }
+
+  a {
+    align-self: flex-start;
+    padding: 10px 0;
+    color: var(--rarity-link);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .relic:hover {
+      transform: none;
+    }
+  }
+</style>

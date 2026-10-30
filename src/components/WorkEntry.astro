@@ -1,0 +1,123 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Parchment from "./ornaments/Parchment.astro";
+
+interface Props {
+  entry: CollectionEntry<"work">["data"];
+}
+
+const { entry } = Astro.props;
+const hasProducts = entry.products.length > 0;
+const hasStack = entry.stack.length > 0;
+---
+
+<Parchment as="article">
+  <div class="layout">
+    <div class="meta">
+      <span class="company">{entry.company}</span>
+      <span>{entry.role}</span>
+      <span class="period">{entry.period}</span>
+    </div>
+    <div class="body">
+      <h3>{entry.headline}</h3>
+      <p>{entry.summary}</p>
+      {
+        hasProducts && (
+          <ul>
+            {entry.products.map((product) => (
+              <li>
+                <span class="bullet" aria-hidden="true" />
+                <span>
+                  <strong>{product.name}</strong>
+                  <span class="muted">, {product.description}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      {hasStack && <p class="stack">{entry.stack.join(", ")}</p>}
+    </div>
+  </div>
+</Parchment>
+
+<style>
+  .layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 44px;
+  }
+
+  .meta {
+    flex: 1 1 190px;
+    display: flex;
+    flex-direction: column;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+
+  .company {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+
+  .period {
+    font-style: italic;
+  }
+
+  .body {
+    flex: 999 1 500px;
+    min-width: 0;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  h3 {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  .bullet {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    background: var(--ink-accent);
+    transform: rotate(45deg) translateY(-3px);
+  }
+
+  .muted,
+  .stack {
+    color: var(--ink-muted);
+  }
+
+  .stack {
+    font-size: 16px;
+    font-style: italic;
+  }
+</style>

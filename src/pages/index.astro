@@ -1,0 +1,187 @@
+---
+import { getCollection } from "astro:content";
+import CodeTome from "../components/CodeTome.astro";
+import Hero from "../components/Hero.astro";
+import Parchment from "../components/ornaments/Parchment.astro";
+import SectionHeading from "../components/ornaments/SectionHeading.astro";
+import Relic from "../components/Relic.astro";
+import Timeline from "../components/Timeline.astro";
+import WaxSeal from "../components/WaxSeal.astro";
+import WorkEntry from "../components/WorkEntry.astro";
+import { SECTION_ID, SITE, TOOL_GROUPS } from "../config/site";
+import { byOrder } from "../domain/project";
+import Base from "../layouts/Base.astro";
+
+const work = (await getCollection("work")).sort(byOrder).map((entry) => entry.data);
+const timeline = (await getCollection("timeline")).sort(byOrder).map((entry) => entry.data);
+const [featuredProject, ...otherProjects] = (await getCollection("projects")).sort(byOrder).map((entry) => entry.data);
+const mailto = `mailto:${SITE.email}`;
+---
+
+<Base>
+  <Hero />
+
+  <main class="container">
+    <CodeTome />
+
+    <section class="section" aria-labelledby={SECTION_ID.work}>
+      <SectionHeading id={SECTION_ID.work}>Recent work</SectionHeading>
+      {work.map((entry) => <WorkEntry entry={entry} />)}
+    </section>
+
+    <section class="section" aria-labelledby={SECTION_ID.openSource}>
+      <SectionHeading id={SECTION_ID.openSource}>Open source</SectionHeading>
+      <div class="relics">
+        {featuredProject && <Relic project={featuredProject} featured />}
+        {otherProjects.map((project) => <Relic project={project} />)}
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby={SECTION_ID.experience}>
+      <SectionHeading id={SECTION_ID.experience}>Experience</SectionHeading>
+      <div class="experience">
+        <div class="history">
+          <Timeline items={timeline} />
+          <p class="side-note">
+            On the side I run <strong>Veltro Sistemas</strong>, a small studio that builds software for local businesses.
+            I also have a background in penetration testing, which mostly shows up as a habit of reading code the way an
+            attacker would.
+          </p>
+        </div>
+        <div class="tools">
+          <Parchment padding="medium">
+            <div class="tools-body">
+              <h3>Tools</h3>
+              {
+                TOOL_GROUPS.map((group) => (
+                  <p>
+                    <em>{group.label}:</em> {group.items}
+                  </p>
+                ))
+              }
+            </div>
+          </Parchment>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" aria-labelledby={SECTION_ID.contact}>
+      <SectionHeading id={SECTION_ID.contact}>Contact</SectionHeading>
+      <WaxSeal href={mailto} label={`Email ${SITE.name}`} initials={SITE.initials} />
+      <p class="contact-line">
+        Email is the fastest way to reach me: <a class="email" href={mailto}>{SITE.email}</a>. I'm on Brasília time,
+        UTC−3.
+      </p>
+      <p class="profiles">
+        <a href={SITE.github}>GitHub</a>
+        <a href={SITE.linkedin}>LinkedIn</a>
+      </p>
+    </section>
+  </main>
+
+  <footer>{SITE.fullName}, {SITE.location}</footer>
+</Base>
+
+<style>
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    padding-top: var(--section-gap);
+  }
+
+  .relics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+
+  .experience {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 56px;
+  }
+
+  .history {
+    flex: 999 1 520px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .side-note {
+    max-width: 640px;
+    margin-top: 8px;
+    color: var(--text-soft);
+  }
+
+  .side-note strong {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .tools {
+    flex: 1 1 300px;
+    min-width: 0;
+    align-self: flex-start;
+  }
+
+  .tools-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    font-size: 17px;
+  }
+
+  .tools-body h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .tools-body em {
+    color: var(--ink-muted);
+  }
+
+  .contact {
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 120px;
+    text-align: center;
+  }
+
+  .contact-line {
+    max-width: 640px;
+    font-size: 23px;
+    line-height: 1.5;
+  }
+
+  .email {
+    word-break: break-all;
+  }
+
+  .profiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 28px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.08em;
+  }
+
+  .profiles a {
+    padding: 10px 0;
+  }
+
+  footer {
+    padding: 28px var(--gutter) 40px;
+    border-top: 1px solid var(--night-line);
+    font-size: 16px;
+    font-style: italic;
+    text-align: center;
+    color: var(--text-faint);
+  }
+</style>

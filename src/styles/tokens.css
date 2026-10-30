@@ -1,0 +1,41 @@
+:root {
+  --night: #12100c;
+  --night-line: #3a2f1e;
+  --text: #e8dfcc;
+  --text-soft: #d8cdb4;
+  --text-muted: #b8a888;
+  --text-faint: #9c8f74;
+  --text-nav: #c9b48a;
+
+  --gold: #c9a44c;
+  --gold-pale: #fff1bf;
+  --gold-bright: #f1d27a;
+  --gold-deep: #7a5a1e;
+  --gold-line: #8c6a25;
+  --link: #e2c072;
+  --link-hover: #ffe7a3;
+
+  --parchment: #eadcbc;
+  --ink: #2b2116;
+  --ink-muted: #5e4b32;
+  --ink-faint: #9c8763;
+  --ink-accent: #8a2e12;
+  --ink-green: #2f5a2a;
+
+  --legendary: #ff8000;
+  --legendary-text: #ff9b3d;
+  --legendary-link: #ffb067;
+  --epic: #a335ee;
+  --epic-text: #c77dff;
+  --epic-link: #d9a6ff;
+  --rare: #3d8bff;
+  --rare-text: #78aeff;
+
+  --font-display: "Cinzel", "Trajan Pro", serif;
+  --font-body: "EB Garamond", Georgia, serif;
+  --font-code: "JetBrains Mono", ui-monospace, monospace;
+
+  --content-width: 1080px;
+  --gutter: 24px;
+  --section-gap: 136px;
+}

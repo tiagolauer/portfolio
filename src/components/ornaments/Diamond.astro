@@ -1,0 +1,26 @@
+---
+interface Props {
+  hollow?: boolean;
+}
+
+const { hollow = false } = Astro.props;
+---
+
+<span class:list={["diamond", { hollow }]} aria-hidden="true"></span>
+
+<style>
+  .diamond {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .hollow {
+    width: 12px;
+    height: 12px;
+    background: none;
+    border: 1px solid var(--gold);
+  }
+</style>
