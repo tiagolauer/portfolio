@@ -1,3 +1,8 @@
+- id: atria
+  order: 0
+  period: 2026 to now
+  description: Senior software architect at ATRIA Corp, full time and remote
+
 - id: ohubdev
   order: 1
   period: "2026"

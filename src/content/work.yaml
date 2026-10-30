@@ -49,10 +49,10 @@
   stack: [Nuxt, Canvas, GraphQL, React Native, .NET reporting]
 
 - id: atria
-  order: 5
-  company: ATRIA
-  role: Technical lead
-  period: "[period]"
+  order: 0
+  company: ATRIA Corp
+  role: Senior software architect, remote
+  period: 2026 to now
   headline: Technical reference for a group of products
   summary: >-
     I set the architecture, build the difficult parts and write down why, in decision records that
