@@ -2,7 +2,7 @@
   order: 0
   company: ATRIA Corp
   role: Senior software architect, remote
-  period: 2026 to now
+  period: Sep 2026 – present
   headline: Technical reference for a group of products
   summary: >-
     I set the architecture, build the difficult parts and write down why, in decision records that
@@ -12,21 +12,22 @@
 - id: ohubdev
   order: 1
   company: ohubdev
-  role: Software engineer
-  period: "2026"
+  role: Software engineer, hybrid
+  period: Feb 2026 – Jun 2026
   headline: Cut the audit screens from five requests to one
   summary: >-
-    The audit views needed deeply nested data and made five REST calls to get it. I added a GraphQL
-    layer to the ASP.NET Core backend with Hot Chocolate, so each view now loads in a single request.
-    I also set up Azure AD sign-in with access control, and rewrote the time-record rules so audit
-    data matches to the millisecond.
+    I was the only developer on the core product, so the architecture, data security and production
+    were mine. The audit views needed deeply nested data and made five REST calls to get it. I added a
+    GraphQL layer to the ASP.NET Core backend with Hot Chocolate, so each view now loads in a single
+    request. I also set up Azure AD sign-in with access control, and rewrote the time-record rules so
+    audit data matches to the millisecond.
   stack: [C#, ASP.NET Core, GraphQL, Azure AD, CI/CD]
 
 - id: h2k
   order: 2
-  company: H2K
-  role: Mobile developer, contract
-  period: 2025 to 2026
+  company: H2K Tecnologia
+  role: Mobile engineer, on-site
+  period: Jul 2025 – Feb 2026
   headline: Shipped the mobile apps for a SaaS with 10,000+ users
   summary: >-
     I set up the React Native and Expo architecture and a shared TypeScript component library that
@@ -38,8 +39,8 @@
 - id: beeasy
   order: 3
   company: Beeasy Digital
-  role: Frontend developer, contract
-  period: 2025 to 2026
+  role: Frontend developer, remote
+  period: Feb 2025 – Jan 2026
   headline: Moved a Vue 2 dashboard to Vue 3 while 500+ businesses kept using it
   summary: >-
     I planned and ran the migration to Vue 3.5 and the Composition API without taking production
@@ -51,7 +52,7 @@
   order: 4
   company: DJIN Tech Solutions
   role: Software developer, remote
-  period: 2023 to 2025
+  period: Aug 2023 – Apr 2025
   headline: Made 50,000-row spreadsheets usable in the browser
   summary: >-
     A SaaS for 1,000+ enterprise clients across APAC, with real-time views over 100,000+ records. I

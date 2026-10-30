@@ -1,36 +1,36 @@
 - id: atria
   order: 0
-  period: 2026 to now
-  description: Senior software architect at ATRIA Corp, full time and remote
+  period: Sep 2026 – present
+  description: Senior software architect at ATRIA Corp, remote
 
 - id: ohubdev
   order: 1
-  period: "2026"
+  period: Feb 2026 – Jun 2026
   description: Software engineer at ohubdev, Balneário Camboriú
 
 - id: h2k
   order: 2
-  period: 2025 to 2026
-  description: Mobile developer at H2K, contract
+  period: Jul 2025 – Feb 2026
+  description: Mobile engineer at H2K Tecnologia, Brusque
 
 - id: beeasy
   order: 3
-  period: 2025 to 2026
-  description: Frontend developer at Beeasy Digital, contract
+  period: Feb 2025 – Jan 2026
+  description: Frontend developer at Beeasy Digital, remote
 
 - id: djin
   order: 4
-  period: 2023 to 2025
+  period: Aug 2023 – Apr 2025
   description: Software developer at DJIN Tech Solutions, remote with an international team
 
 - id: bravuserp
   order: 5
-  period: 2022 to 2023
+  period: Feb 2022 – Aug 2023
   description: Support technician and test analyst at Bravuserp, an ERP and POS used by 200+ businesses
 
 - id: freelance
   order: 6
-  period: 2019 to 2022
+  period: Jan 2019 – Feb 2022
   description: >-
     Freelance developer. Five apps on the App Store and Google Play, with Stripe, Pagar.me, WhatsApp
     and Correios integrations
