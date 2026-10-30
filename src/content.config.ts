@@ -13,7 +13,6 @@ const work = defineCollection({
     headline: z.string(),
     summary: z.string(),
     stack: z.array(z.string()).default([]),
-    products: z.array(z.object({ name: z.string(), description: z.string() })).default([]),
   }),
 });
 

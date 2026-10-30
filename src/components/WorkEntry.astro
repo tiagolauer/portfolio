@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const hasProducts = entry.products.length > 0;
 const hasStack = entry.stack.length > 0;
 ---
 
@@ -21,21 +20,6 @@ const hasStack = entry.stack.length > 0;
     <div class="body">
       <h3>{entry.headline}</h3>
       <p>{entry.summary}</p>
-      {
-        hasProducts && (
-          <ul>
-            {entry.products.map((product) => (
-              <li>
-                <span class="bullet" aria-hidden="true" />
-                <span>
-                  <strong>{product.name}</strong>
-                  <span class="muted">, {product.description}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        )
-      }
       {hasStack && <p class="stack">{entry.stack.join(", ")}</p>}
     </div>
   </div>
@@ -84,40 +68,9 @@ const hasStack = entry.stack.length > 0;
     line-height: 1.25;
   }
 
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin: 4px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  li {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-  }
-
-  strong {
-    font-weight: 600;
-  }
-
-  .bullet {
-    flex: 0 0 auto;
-    width: 6px;
-    height: 6px;
-    background: var(--ink-accent);
-    transform: rotate(45deg) translateY(-3px);
-  }
-
-  .muted,
-  .stack {
-    color: var(--ink-muted);
-  }
-
   .stack {
     font-size: 16px;
     font-style: italic;
+    color: var(--ink-muted);
   }
 </style>

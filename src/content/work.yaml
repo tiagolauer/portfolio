@@ -1,3 +1,14 @@
+- id: atria
+  order: 0
+  company: ATRIA Corp
+  role: Senior software architect, remote
+  period: 2026 to now
+  headline: Technical reference for a group of products
+  summary: >-
+    I set the architecture, build the difficult parts and write down why, in decision records that
+    every project keeps. The work covers WhatsApp automation with n8n, local AI models, and web and
+    mobile apps.
+
 - id: ohubdev
   order: 1
   company: ohubdev
@@ -47,27 +58,3 @@
     moved spreadsheet rendering to HTML Canvas and pushed the heavy computation to Web Workers. I also
     built the companion React Native app on the same GraphQL API.
   stack: [Nuxt, Canvas, GraphQL, React Native, .NET reporting]
-
-- id: atria
-  order: 0
-  company: ATRIA Corp
-  role: Senior software architect, remote
-  period: 2026 to now
-  headline: Technical reference for a group of products
-  summary: >-
-    I set the architecture, build the difficult parts and write down why, in decision records that
-    every project keeps. The work covers WhatsApp automation with n8n, local AI models, and web and
-    mobile apps.
-  products:
-    - name: Vivarium
-      description: a React and Phaser product
-    - name: San Marino
-      description: "[what it does]"
-    - name: EMonitorX
-      description: "[what it does]"
-    - name: Ouro Safra
-      description: "[what it does]"
-    - name: OdontoQuiz
-      description: "[what it does]"
-    - name: Farma Débora
-      description: "[what it does]"
