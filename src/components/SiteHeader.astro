@@ -1,12 +1,23 @@
 ---
-import { NAV_ITEMS, SECTION_ID, SITE } from "../config/site";
+import { NAV_WITH_BLOG, NAV_WITHOUT_BLOG, SITE } from "../config/site";
+import { BLOG_PATH, getVisiblePosts } from "../lib/posts";
+
+const hasPosts = (await getVisiblePosts()).length > 0;
+const items = hasPosts ? NAV_WITH_BLOG : NAV_WITHOUT_BLOG;
+const isInBlog = Astro.url.pathname.startsWith(BLOG_PATH);
 ---
 
 <header class="site-header">
   <div class="container bar">
-    <a class="brand" href={`#${SECTION_ID.top}`}>{SITE.name}</a>
+    <a class="brand" href="/">{SITE.name}</a>
     <nav aria-label="Sections">
-      {NAV_ITEMS.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+      {
+        items.map((item) => (
+          <a href={item.href} aria-current={isInBlog && item.href === BLOG_PATH ? "page" : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
     </nav>
   </div>
 </header>
@@ -57,6 +68,12 @@ import { NAV_ITEMS, SECTION_ID, SITE } from "../config/site";
     color: var(--text-nav);
     text-decoration: none;
     white-space: nowrap;
+  }
+
+  nav a[aria-current="page"] {
+    color: var(--link-hover);
+    text-decoration: underline;
+    text-underline-offset: 6px;
   }
 
   @media (max-width: 600px) {

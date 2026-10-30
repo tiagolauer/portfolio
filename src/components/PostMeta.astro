@@ -1,0 +1,47 @@
+---
+import { formatDate, isoDate } from "../lib/format";
+
+interface Props {
+  date: Date;
+  tags: readonly string[];
+  draft?: boolean;
+}
+
+const { date, tags, draft = false } = Astro.props;
+---
+
+<p class="meta">
+  <time datetime={isoDate(date)}>{formatDate(date)}</time>
+  {draft && <span class="draft">draft</span>}
+  {tags.length > 0 && <span class="tags">{tags.join(", ")}</span>}
+</p>
+
+<style>
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 16px;
+    font-size: 16px;
+    color: inherit;
+  }
+
+  time {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: var(--meta-accent, var(--gold));
+  }
+
+  .draft {
+    padding: 0 8px;
+    border: 1px dashed currentColor;
+    border-radius: 3px;
+    font-size: 14px;
+  }
+
+  .tags {
+    font-style: italic;
+    opacity: 0.85;
+  }
+</style>

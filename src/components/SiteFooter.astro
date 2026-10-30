@@ -1,0 +1,16 @@
+---
+import { SITE } from "../config/site";
+---
+
+<footer>{SITE.fullName}, {SITE.location}</footer>
+
+<style>
+  footer {
+    padding: 28px var(--gutter) 40px;
+    border-top: 1px solid var(--night-line);
+    font-size: 16px;
+    font-style: italic;
+    text-align: center;
+    color: var(--text-faint);
+  }
+</style>

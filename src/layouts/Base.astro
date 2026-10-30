@@ -9,8 +9,18 @@ import "@fontsource/jetbrains-mono/latin-400.css";
 import "@fontsource/jetbrains-mono/latin-500.css";
 import "../styles/tokens.css";
 import "../styles/global.css";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import { SITE } from "../config/site";
+import { RSS_PATH } from "../lib/posts";
 
+interface Props {
+  title?: string;
+  description?: string;
+  type?: "website" | "article";
+}
+
+const { title = SITE.title, description = SITE.description, type = "website" } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -19,19 +29,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{SITE.title}</title>
-    <meta name="description" content={SITE.description} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
     <meta name="author" content={SITE.fullName} />
     <meta name="theme-color" content="#12100c" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={SITE.title} />
-    <meta property="og:description" content={SITE.description} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name}'s blog`} href={RSS_PATH} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary" />
   </head>
   <body>
+    <SiteHeader />
     <slot />
+    <SiteFooter />
   </body>
 </html>

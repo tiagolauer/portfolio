@@ -19,12 +19,27 @@ export const SECTION_ID = {
   contact: "contact",
 } as const;
 
-export const NAV_ITEMS = [
-  { id: SECTION_ID.work, label: "Work" },
-  { id: SECTION_ID.openSource, label: "Open source" },
-  { id: SECTION_ID.experience, label: "Experience" },
-  { id: SECTION_ID.contact, label: "Contact" },
-] as const;
+export interface NavLink {
+  href: string;
+  label: string;
+}
+
+export const NAV_LINK = {
+  work: { href: `/#${SECTION_ID.work}`, label: "Work" },
+  openSource: { href: `/#${SECTION_ID.openSource}`, label: "Open source" },
+  experience: { href: `/#${SECTION_ID.experience}`, label: "Experience" },
+  contact: { href: `/#${SECTION_ID.contact}`, label: "Contact" },
+  blog: { href: "/blog", label: "Blog" },
+} as const satisfies Record<string, NavLink>;
+
+export const NAV_WITHOUT_BLOG: readonly NavLink[] = [
+  NAV_LINK.work,
+  NAV_LINK.openSource,
+  NAV_LINK.experience,
+  NAV_LINK.contact,
+];
+
+export const NAV_WITH_BLOG: readonly NavLink[] = [NAV_LINK.work, NAV_LINK.openSource, NAV_LINK.blog, NAV_LINK.contact];
 
 export const TOOL_GROUPS = [
   {
