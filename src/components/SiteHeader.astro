@@ -1,0 +1,75 @@
+---
+import { NAV_ITEMS, SECTION_ID, SITE } from "../config/site";
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href={`#${SECTION_ID.top}`}>{SITE.name}</a>
+    <nav aria-label="Sections">
+      {NAV_ITEMS.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgb(18 16 12 / 0.94);
+    border-bottom: 1px solid rgb(58 47 30 / 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    height: var(--header-height);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  nav {
+    display: flex;
+    gap: 24px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-nav);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .brand {
+      display: none;
+    }
+
+    nav {
+      flex: 1;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: clamp(11px, 3.4vw, 14px);
+      letter-spacing: 0.04em;
+    }
+  }
+</style>

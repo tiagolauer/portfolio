@@ -1,18 +1,11 @@
 ---
-import { NAV_ITEMS, SECTION_ID, SITE } from "../config/site";
+import { SECTION_ID, SITE } from "../config/site";
 import Embers from "./Embers.astro";
 import Divider from "./ornaments/Divider.astro";
 ---
 
 <div class="night">
   <Embers />
-
-  <header class="container header">
-    <a class="brand" href={`#${SECTION_ID.top}`}>{SITE.name}</a>
-    <nav aria-label="Sections">
-      {NAV_ITEMS.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
-    </nav>
-  </header>
 
   <section class="container hero" id={SECTION_ID.top}>
     <h1>{SITE.name}</h1>
@@ -31,6 +24,8 @@ import Divider from "./ornaments/Divider.astro";
   .night {
     position: relative;
     overflow: hidden;
+    margin-top: calc(-1 * var(--header-height));
+    padding-top: var(--header-height);
     border-bottom: 1px solid var(--night-line);
     background-color: var(--night);
     background-image:
@@ -45,54 +40,21 @@ import Divider from "./ornaments/Divider.astro";
       radial-gradient(1px 1px at 6% 58%, rgb(255 240 200 / 0.5), transparent);
   }
 
-  .header {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px 24px;
-    padding-top: 24px;
-  }
-
-  .brand {
-    padding: 10px 0;
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-decoration: none;
-  }
-
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 20px;
-    font-family: var(--font-display);
-    font-size: 14px;
-    letter-spacing: 0.1em;
-  }
-
-  nav a {
-    padding: 10px 0;
-    color: var(--text-nav);
-    text-decoration: none;
-  }
-
   .hero {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 28px;
-    padding-top: 104px;
-    padding-bottom: 120px;
+    gap: clamp(20px, 5vw, 28px);
+    padding-top: clamp(48px, 12vw, 120px);
+    padding-bottom: clamp(96px, 16vw, 120px);
     text-align: center;
+    scroll-margin-top: var(--header-height);
   }
 
   h1 {
     font-family: var(--font-display);
-    font-size: clamp(54px, 9vw, 116px);
+    font-size: clamp(52px, 9vw, 116px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0.04em;
@@ -132,13 +94,14 @@ import Divider from "./ornaments/Divider.astro";
 
   .lead {
     max-width: 640px;
-    font-size: 23px;
+    font-size: clamp(19px, 5.2vw, 23px);
     line-height: 1.5;
     color: #ede3cc;
   }
 
   .aside {
     max-width: 640px;
+    font-size: clamp(16px, 4.6vw, 19px);
     font-style: italic;
     color: var(--text-muted);
   }

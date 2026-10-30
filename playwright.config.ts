@@ -11,6 +11,7 @@ export default defineConfig({
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "small-phone", use: { ...devices["Pixel 7"], viewport: { width: 320, height: 568 } } },
   ],
   webServer: {
     command: `pnpm preview --host 127.0.0.1 --port ${PORT}`,

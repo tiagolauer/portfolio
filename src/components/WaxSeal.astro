@@ -34,9 +34,18 @@ const { href, label, initials } = Astro.props;
   }
 
   .seal:hover {
-    transform: rotate(-8deg) scale(1.05);
-    filter: brightness(1.12);
     text-shadow: none;
+  }
+
+  .seal:active {
+    transform: scale(0.96);
+  }
+
+  @media (hover: hover) {
+    .seal:hover {
+      transform: rotate(-8deg) scale(1.05);
+      filter: brightness(1.12);
+    }
   }
 
   span:not(.visually-hidden) {

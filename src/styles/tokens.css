@@ -37,5 +37,13 @@
 
   --content-width: 1080px;
   --gutter: 24px;
-  --section-gap: 136px;
+  --section-gap: clamp(88px, 14vw, 136px);
+  --header-height: 60px;
+}
+
+@media (max-width: 480px) {
+  :root {
+    --gutter: 18px;
+    --header-height: 52px;
+  }
 }

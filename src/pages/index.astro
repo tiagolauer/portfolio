@@ -5,6 +5,7 @@ import Hero from "../components/Hero.astro";
 import Parchment from "../components/ornaments/Parchment.astro";
 import SectionHeading from "../components/ornaments/SectionHeading.astro";
 import Relic from "../components/Relic.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import Timeline from "../components/Timeline.astro";
 import WaxSeal from "../components/WaxSeal.astro";
 import WorkEntry from "../components/WorkEntry.astro";
@@ -19,6 +20,7 @@ const mailto = `mailto:${SITE.email}`;
 ---
 
 <Base>
+  <SiteHeader />
   <Hero />
 
   <main class="container">
@@ -68,10 +70,11 @@ const mailto = `mailto:${SITE.email}`;
     <section class="section contact" aria-labelledby={SECTION_ID.contact}>
       <SectionHeading id={SECTION_ID.contact}>Contact</SectionHeading>
       <WaxSeal href={mailto} label={`Email ${SITE.name}`} initials={SITE.initials} />
-      <p class="contact-line">
-        Email is the fastest way to reach me: <a class="email" href={mailto}>{SITE.email}</a>. I'm on Brasília time,
-        UTC−3.
-      </p>
+      <div class="contact-body">
+        <p class="contact-line">Email is the fastest way to reach me:</p>
+        <a class="email" href={mailto}>{SITE.email}</a>
+        <p class="contact-note">I'm on Brasília time, UTC−3.</p>
+      </div>
       <p class="profiles">
         <a href={SITE.github}>GitHub</a>
         <a href={SITE.linkedin}>LinkedIn</a>
@@ -86,20 +89,20 @@ const mailto = `mailto:${SITE.email}`;
   .section {
     display: flex;
     flex-direction: column;
-    gap: 56px;
+    gap: clamp(36px, 9vw, 56px);
     padding-top: var(--section-gap);
   }
 
   .relics {
     display: flex;
     flex-wrap: wrap;
-    gap: 32px;
+    gap: clamp(20px, 5vw, 32px);
   }
 
   .experience {
     display: flex;
     flex-wrap: wrap;
-    gap: 56px;
+    gap: clamp(40px, 9vw, 56px);
   }
 
   .history {
@@ -148,18 +151,34 @@ const mailto = `mailto:${SITE.email}`;
   .contact {
     align-items: center;
     gap: 24px;
-    padding-bottom: 120px;
+    padding-bottom: clamp(88px, 14vw, 120px);
     text-align: center;
   }
 
+  .contact-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+  }
+
   .contact-line {
-    max-width: 640px;
-    font-size: 23px;
+    font-size: clamp(19px, 5.4vw, 23px);
     line-height: 1.5;
   }
 
   .email {
-    word-break: break-all;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    min-height: 44px;
+    font-size: clamp(19px, 5.6vw, 26px);
+    overflow-wrap: anywhere;
+  }
+
+  .contact-note {
+    color: var(--text-muted);
   }
 
   .profiles {
@@ -173,7 +192,9 @@ const mailto = `mailto:${SITE.email}`;
   }
 
   .profiles a {
-    padding: 10px 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   footer {

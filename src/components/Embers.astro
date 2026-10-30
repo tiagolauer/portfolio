@@ -81,6 +81,12 @@ const embers = Array.from({ length: count }, (_, index) => {
     }
   }
 
+  @media (max-width: 640px) {
+    .ember:nth-child(n + 15) {
+      display: none;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .embers {
       display: none;
